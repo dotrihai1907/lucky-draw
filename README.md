@@ -21,7 +21,7 @@ Built with **React + TypeScript**, modern UI, smooth animations, and fair random
 
 ### Core
 
-- **React 19**
+- **React 18**
 - **TypeScript**
 - **Vite** (fast dev & build)
 

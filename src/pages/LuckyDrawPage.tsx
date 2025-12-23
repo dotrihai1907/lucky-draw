@@ -52,6 +52,9 @@ export default function LuckyDrawPage() {
   const [pendingWinner, setPendingWinner] = useState<WinnerRecord | null>(null);
 
   const pickedPlayersRef = useRef<Set<string>>(new Set());
+  const [disabledPlayers, setDisabledPlayers] = useState<Set<string>>(
+    new Set()
+  );
 
   /* ===== BGM ===== */
   const [bgmEnabled, setBgmEnabled] = useState(false);
@@ -70,7 +73,6 @@ export default function LuckyDrawPage() {
   });
 
   const currentPrize = PRIZES[prizeIndex];
-  const sliceAngle = 360 / players.length;
 
   /* ===== BGM EFFECT ===== */
   useEffect(() => {
@@ -78,22 +80,38 @@ export default function LuckyDrawPage() {
     else bgmSound?.stop();
   }, [bgmEnabled, playBgm, bgmSound]);
 
-  /* ===== CALCULATE WINNER ===== */
-  const getWinnerByRotation = (finalRotation: number) => {
-    const normalized = ((finalRotation % 360) + 360) % 360;
-    const pointerAngle = (360 - normalized) % 360;
-    const index = Math.floor(pointerAngle / sliceAngle);
-    return players[index];
-  };
-
   /* ===== SPIN ===== */
   const spin = () => {
     if (spinning || !currentPrize) return;
+
+    // 1️⃣ Lấy danh sách người CHƯA trúng
+    const availablePlayers = players.filter(
+      (p) => !pickedPlayersRef.current.has(p)
+    );
+
+    if (availablePlayers.length === 0) return;
 
     setSpinning(true);
     setShowResult(false);
     setWinner(null);
 
+    // 2️⃣ CHỌN WINNER TRƯỚC (CHUẨN)
+    const selected =
+      availablePlayers[Math.floor(Math.random() * availablePlayers.length)];
+
+    const winnerIndex = players.indexOf(selected);
+
+    // 3️⃣ TÍNH GÓC để mũi tên CHỈ ĐÚNG ô đó
+    const sliceAngle = 360 / players.length;
+    const targetAngle = 360 - (winnerIndex * sliceAngle + sliceAngle / 2);
+
+    const nextRotation =
+      rotationRef.current +
+      EXTRA_ROUNDS * 360 +
+      targetAngle -
+      (rotationRef.current % 360);
+
+    // 4️⃣ QUAY
     spinSound?.stop();
     spinSound?.volume(0.4);
     playSpin();
@@ -102,23 +120,11 @@ export default function LuckyDrawPage() {
       spinSound?.fade(0.4, 0, 800);
     }, SPIN_FADE_OUT_AT);
 
-    const nextRotation =
-      rotationRef.current + EXTRA_ROUNDS * 360 + Math.random() * 360;
-
     rotationRef.current = nextRotation;
     setRotation(nextRotation);
 
+    // 5️⃣ KẾT THÚC
     setTimeout(() => {
-      let selected = getWinnerByRotation(nextRotation);
-
-      let guard = 0;
-      while (pickedPlayersRef.current.has(selected) && guard < 10) {
-        selected = players[Math.floor(Math.random() * players.length)];
-        guard++;
-      }
-
-      pickedPlayersRef.current.add(selected);
-
       playWin();
 
       setPendingWinner({
@@ -139,8 +145,14 @@ export default function LuckyDrawPage() {
 
     if (!pendingWinner || !currentPrize) return;
 
+    // add to winners list
     setWinners((prev) => [...prev, pendingWinner]);
 
+    // 🔑 SYNC REF + STATE
+    pickedPlayersRef.current.add(pendingWinner.player);
+    setDisabledPlayers(new Set(pickedPlayersRef.current));
+
+    // prize flow
     if (prizeCount + 1 === currentPrize.count) {
       setPrizeIndex((p) => p + 1);
       setPrizeCount(0);
@@ -157,10 +169,20 @@ export default function LuckyDrawPage() {
 
     if (pendingWinner) {
       pickedPlayersRef.current.delete(pendingWinner.player);
+      setDisabledPlayers(new Set(pickedPlayersRef.current));
     }
 
     setPendingWinner(null);
   };
+
+  const winnersByPrize = winners.reduce<Record<string, WinnerRecord[]>>(
+    (acc, w) => {
+      acc[w.prizeName] = acc[w.prizeName] || [];
+      acc[w.prizeName].push(w);
+      return acc;
+    },
+    {}
+  );
 
   return (
     <div
@@ -238,13 +260,13 @@ export default function LuckyDrawPage() {
           </div>
         )}
 
-        <div
-          style={{
-            width: "min(55vh, 520px)",
-            height: "min(55vh, 520px)",
-          }}
-        >
-          <LuckyWheel names={players} rotation={rotation} />
+        <div style={{ width: "min(55vh, 520px)", height: "min(55vh, 520px)" }}>
+          <LuckyWheel
+            names={players}
+            rotation={rotation}
+            disabledNames={disabledPlayers}
+            highlightName={showResult ? winner : null}
+          />
         </div>
 
         <button
@@ -275,10 +297,32 @@ export default function LuckyDrawPage() {
           backdropFilter: "blur(10px)",
         }}
       >
-        <h3>🏆 Winners</h3>
-        {winners.map((w, i) => (
-          <div key={i}>
-            <strong>{w.prizeName}</strong> – {w.player}
+        <h3>🏆 Lucky Persons</h3>
+        {Object.entries(winnersByPrize).map(([prizeName, list]) => (
+          <div key={prizeName} style={{ marginBottom: 16 }}>
+            <div
+              style={{
+                fontWeight: 700,
+                marginBottom: 8,
+                opacity: 0.9,
+              }}
+            >
+              🎁 {prizeName}
+            </div>
+
+            {list.map((w, i) => (
+              <div
+                key={i}
+                style={{
+                  padding: "6px 8px",
+                  borderRadius: 8,
+                  background: "rgba(255,255,255,0.08)",
+                  marginBottom: 6,
+                }}
+              >
+                {i + 1}. {w.player}
+              </div>
+            ))}
           </div>
         ))}
       </div>

@@ -1,7 +1,8 @@
 interface LuckyWheelProps {
   names: string[];
   rotation: number;
-  highlightedIndex?: number | null;
+  disabledNames?: Set<string>;
+  highlightName?: string | null;
 }
 
 const VIEWBOX = 1000;
@@ -11,7 +12,8 @@ const RADIUS = 480;
 export default function LuckyWheel({
   names,
   rotation,
-  highlightedIndex,
+  disabledNames = new Set(),
+  highlightName = null,
 }: LuckyWheelProps) {
   const sliceAngle = 360 / names.length;
 
@@ -25,7 +27,7 @@ export default function LuckyWheel({
         style={{
           transformOrigin: "50% 50%",
           transform: `rotate(${rotation - 90}deg)`,
-          transition: "transform 7s cubic-bezier(0.17,0.67,0.12,0.99)",
+          transition: "transform 8.5s cubic-bezier(0.17,0.67,0.12,0.99)",
         }}
       >
         {names.map((name, index) => {
@@ -34,23 +36,22 @@ export default function LuckyWheel({
 
           const x1 = CENTER + RADIUS * Math.cos((Math.PI * startAngle) / 180);
           const y1 = CENTER + RADIUS * Math.sin((Math.PI * startAngle) / 180);
-
           const x2 = CENTER + RADIUS * Math.cos((Math.PI * endAngle) / 180);
           const y2 = CENTER + RADIUS * Math.sin((Math.PI * endAngle) / 180);
 
           const textAngle = startAngle + sliceAngle / 2;
           const textRadius = RADIUS * 0.65;
-
           const tx =
             CENTER + textRadius * Math.cos((Math.PI * textAngle) / 180);
           const ty =
             CENTER + textRadius * Math.sin((Math.PI * textAngle) / 180);
 
-          const isWinner = index === highlightedIndex;
+          const isDisabled = disabledNames.has(name);
+          const isHighlight = highlightName === name;
 
           return (
             <g key={`${name}-${index}`}>
-              {/* Slice */}
+              {/* SLICE */}
               <path
                 d={`
                   M ${CENTER} ${CENTER}
@@ -60,29 +61,27 @@ export default function LuckyWheel({
                 `}
                 fill={`hsl(${index * (360 / names.length)}, 80%, 55%)`}
                 style={{
-                  filter: isWinner
-                    ? "drop-shadow(0 0 18px rgba(255,255,255,0.9))"
+                  opacity: isDisabled ? 0.25 : 1,
+                  filter: isHighlight
+                    ? "drop-shadow(0 0 20px rgba(255,255,255,0.8))"
                     : "none",
-                  transform: isWinner ? "scale(1.02)" : "scale(1)",
-                  transformOrigin: "50% 50%",
-                  transition: "all 0.4s ease",
+                  transition: "opacity 0.4s ease",
                 }}
               />
 
-              {/* Label */}
+              {/* TEXT */}
               <text
                 x={tx}
                 y={ty}
                 fill="#fff"
                 fontSize="32"
-                fontWeight={isWinner ? "800" : "600"}
+                fontWeight="600"
                 textAnchor="middle"
                 dominantBaseline="middle"
                 transform={`rotate(${textAngle} ${tx} ${ty})`}
                 style={{
-                  filter: isWinner
-                    ? "drop-shadow(0 0 6px rgba(255,255,255,1))"
-                    : "none",
+                  opacity: isDisabled ? 0.35 : 1,
+                  filter: isHighlight ? "drop-shadow(0 0 6px white)" : "none",
                 }}
               >
                 {name}
@@ -95,14 +94,12 @@ export default function LuckyWheel({
       {/* ===== POINTER ===== */}
       <polygon
         points={`${CENTER - 20},20 ${CENTER + 20},20 ${CENTER},60`}
-        fill="#ffffff"
+        fill="#fff"
       />
       <polygon
         points={`${CENTER - 14},26 ${CENTER + 14},26 ${CENTER},56`}
         fill="#ff3b3b"
-        style={{
-          filter: "drop-shadow(0 0 6px rgba(255,0,0,0.8))",
-        }}
+        style={{ filter: "drop-shadow(0 0 6px rgba(255,0,0,0.8))" }}
       />
     </svg>
   );

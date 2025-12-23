@@ -91,16 +91,32 @@ export default function LuckyWheel({
         })}
       </g>
 
-      {/* ===== POINTER ===== */}
-      <polygon
-        points={`${CENTER - 20},20 ${CENTER + 20},20 ${CENTER},60`}
-        fill="#fff"
-      />
-      <polygon
-        points={`${CENTER - 14},26 ${CENTER + 14},26 ${CENTER},56`}
-        fill="#ff3b3b"
-        style={{ filter: "drop-shadow(0 0 6px rgba(255,0,0,0.8))" }}
-      />
+      {/* ===== POINTER (GLASS STYLE) ===== */}
+      <g>
+        {/* Glow */}
+        <polygon
+          points={`${CENTER - 26},18 ${CENTER + 26},18 ${CENTER},72`}
+          fill="rgba(255,255,255,0.25)"
+          style={{
+            filter: "blur(6px)",
+          }}
+        />
+
+        {/* Main pointer */}
+        <polygon
+          points={`${CENTER - 18},20 ${CENTER + 18},20 ${CENTER},64`}
+          fill="rgba(255,255,255,0.9)"
+          style={{
+            filter: "drop-shadow(0 6px 14px rgba(255,255,255,0.35))",
+          }}
+        />
+
+        {/* Inner glass highlight */}
+        <polygon
+          points={`${CENTER - 10},24 ${CENTER + 10},24 ${CENTER},54`}
+          fill="rgba(255,255,255,0.55)"
+        />
+      </g>
     </svg>
   );
 }

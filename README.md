@@ -27,4 +27,4 @@ Built with **React + TypeScript**, modern UI, smooth animations, and fair random
 
 ### UI & Animation
 
-- **Tailwind CSS** – styling, glass effect, gradients
+- **Inline CSS** – styling, glass effect, gradients

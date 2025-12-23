@@ -253,7 +253,13 @@ export default function LuckyDrawPage() {
       >
         {currentPrize && (
           <div style={{ textAlign: "center", marginBottom: 12 }}>
-            <h2>🎁 {currentPrize.name}</h2>
+            <h2
+              style={{
+                fontFamily: "var(--font-title)",
+              }}
+            >
+              🎁 {currentPrize.name}
+            </h2>
             <p style={{ opacity: 0.7 }}>
               {prizeCount + 1} / {currentPrize.count}
             </p>
@@ -282,6 +288,8 @@ export default function LuckyDrawPage() {
             color: "white",
             cursor: "pointer",
             opacity: spinning ? 0.5 : 1,
+            fontFamily: "var(--font-title)",
+            letterSpacing: 1,
           }}
         >
           SPIN
@@ -297,7 +305,16 @@ export default function LuckyDrawPage() {
           backdropFilter: "blur(10px)",
         }}
       >
-        <h3>🏆 Lucky Persons</h3>
+        <h3
+          style={{
+            fontFamily: "var(--font-title)",
+            fontSize: 20,
+            marginBottom: 12,
+          }}
+        >
+          🏆 Lucky Persons
+        </h3>
+
         {Object.entries(winnersByPrize).map(([prizeName, list]) => (
           <div key={prizeName} style={{ marginBottom: 16 }}>
             <div
@@ -317,7 +334,7 @@ export default function LuckyDrawPage() {
                   padding: "6px 8px",
                   borderRadius: 8,
                   background: "rgba(255,255,255,0.08)",
-                  marginBottom: 6,
+                  marginBottom: 8,
                 }}
               >
                 {i + 1}. {w.player}

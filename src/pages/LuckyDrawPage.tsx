@@ -5,6 +5,7 @@ import useSound from "use-sound";
 import LuckyWheel from "../components/LuckyWheel";
 import ResultModal from "../components/ResultModal";
 import { PRIZES } from "../data/prizes";
+import { BG_GRADIENT, GLASS_CARD } from "../constants/colors";
 
 const ALL_PLAYERS = [
   "Emma",
@@ -190,7 +191,7 @@ export default function LuckyDrawPage() {
         height: "100vh",
         width: "100vw",
         overflow: "hidden",
-        background: "radial-gradient(circle at top, #1f1f1f, #0d0d0d)",
+        background: BG_GRADIENT,
         color: "#fff",
         display: "flex",
         position: "relative",
@@ -208,10 +209,8 @@ export default function LuckyDrawPage() {
           alignItems: "center",
           gap: 10,
           zIndex: 100,
-          background: "rgba(255,255,255,0.12)",
-          backdropFilter: "blur(8px)",
           padding: "8px 14px",
-          borderRadius: 20,
+          ...GLASS_CARD,
         }}
       >
         <span style={{ fontSize: 14 }}>🎵 Background Music</span>
@@ -224,6 +223,7 @@ export default function LuckyDrawPage() {
             border: "none",
             background: bgmEnabled ? "#4caf50" : "#555",
             position: "relative",
+            cursor: "pointer",
           }}
         >
           <span
@@ -279,17 +279,29 @@ export default function LuckyDrawPage() {
           onClick={spin}
           disabled={spinning || !currentPrize}
           style={{
-            marginTop: 20,
-            padding: "12px 36px",
+            marginTop: 24,
+            padding: "16px 46px",
             fontSize: 18,
-            borderRadius: 14,
-            border: "2px solid white",
-            background: "transparent",
-            color: "white",
-            cursor: "pointer",
-            opacity: spinning ? 0.5 : 1,
-            fontFamily: "var(--font-title)",
+            fontFamily: "Fredoka, sans-serif",
             letterSpacing: 1,
+            borderRadius: 18,
+            border: "1px solid rgba(255,255,255,0.35)",
+            background: `linear-gradient(135deg,rgba(255,255,255,0.28),rgba(255,255,255,0.08))`,
+            backdropFilter: "blur(14px)",
+            color: "#fff",
+            cursor: spinning ? "not-allowed" : "pointer",
+            boxShadow: `0 10px 30px rgba(0,0,0,0.35), inset 0 0 0 rgba(255,255,255,0.4)`,
+            transition: "all 0.25s ease",
+            opacity: spinning ? 0.5 : 1,
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.boxShadow =
+              "0 14px 40px rgba(120,180,255,0.45)";
+            e.currentTarget.style.transform = "translateY(-2px)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.boxShadow = "0 10px 30px rgba(0,0,0,0.35)";
+            e.currentTarget.style.transform = "translateY(0)";
           }}
         >
           SPIN
@@ -297,44 +309,31 @@ export default function LuckyDrawPage() {
       </div>
 
       {/* RIGHT */}
-      <div
-        style={{
-          width: 320,
-          padding: 20,
-          background: "rgba(255,255,255,0.08)",
-          backdropFilter: "blur(10px)",
-        }}
-      >
-        <h3
-          style={{
-            fontFamily: "var(--font-title)",
-            fontSize: 20,
-            marginBottom: 12,
-          }}
-        >
+      <div style={{ width: 320, padding: 20, ...GLASS_CARD }}>
+        <h3 style={{ fontFamily: "var(--font-title)", fontSize: 22 }}>
           🏆 Lucky Persons
         </h3>
 
         {Object.entries(winnersByPrize).map(([prizeName, list]) => (
-          <div key={prizeName} style={{ marginBottom: 16 }}>
-            <div
-              style={{
-                fontWeight: 700,
-                marginBottom: 8,
-                opacity: 0.9,
-              }}
-            >
-              🎁 {prizeName}
-            </div>
+          <div
+            key={prizeName}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              marginBottom: 20,
+              gap: 16,
+            }}
+          >
+            <div style={{ fontWeight: 700, fontSize: 18 }}>🎁 {prizeName}</div>
 
             {list.map((w, i) => (
               <div
                 key={i}
                 style={{
-                  padding: "6px 8px",
+                  padding: "8px 12px",
                   borderRadius: 8,
                   background: "rgba(255,255,255,0.08)",
-                  marginBottom: 8,
+                  boxShadow: "0 8px 24px rgba(0,0,0,0.35)",
                 }}
               >
                 {i + 1}. {w.player}

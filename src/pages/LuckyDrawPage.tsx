@@ -24,6 +24,12 @@ type WinnerRecord = {
   player: string;
 };
 
+// ================== TIMING CONFIG ==================
+const SPIN_DURATION = 8500; // ⬅️ total spin time (8.5s)
+const SPIN_FADE_OUT_AT = 7500; // ⬅️ fade sound near the end
+const EXTRA_ROUNDS = 9; // ⬅️ more full rotations
+// ===================================================
+
 export default function LuckyDrawPage() {
   const [players, setPlayers] = useState<string[]>(ALL_PLAYERS);
   const [rotation, setRotation] = useState(0);
@@ -37,15 +43,15 @@ export default function LuckyDrawPage() {
 
   const [winners, setWinners] = useState<WinnerRecord[]>([]);
 
-  /* ===== BGM STATE ===== */
+  /* ===== BGM ===== */
   const [bgmEnabled, setBgmEnabled] = useState(false);
 
-  /* ===== SOUNDS ===== */
   const [playBgm, { sound: bgmSound }] = useSound("/sounds/bgm.mp3", {
     volume: 0.1,
     loop: true,
   });
 
+  /* ===== SPIN & WIN SOUNDS ===== */
   const [playSpin, { sound: spinSound }] = useSound("/sounds/spin.mp3", {
     volume: 0.4,
   });
@@ -66,12 +72,14 @@ export default function LuckyDrawPage() {
     }
   }, [bgmEnabled, playBgm, bgmSound]);
 
+  /* ===== WINNER CALC ===== */
   const calculateWinnerIndex = (finalRotation: number) => {
     const normalized = ((finalRotation % 360) + 360) % 360;
     const pointerAngle = (360 - normalized) % 360;
     return Math.floor(pointerAngle / sliceAngle);
   };
 
+  /* ===== SPIN HANDLER ===== */
   const spin = () => {
     if (spinning || !currentPrize) return;
 
@@ -79,17 +87,22 @@ export default function LuckyDrawPage() {
     setShowResult(false);
     setWinner(null);
 
+    // Reset & play spin sound
     spinSound?.stop();
     spinSound?.volume(0.4);
     playSpin();
 
+    // Fade out spin sound near the end
     setTimeout(() => {
-      spinSound?.fade(0.4, 0, 600);
-    }, 3800);
+      spinSound?.fade(0.4, 0, 800);
+    }, SPIN_FADE_OUT_AT);
 
-    const finalRotation = rotation + 5 * 360 + Math.random() * 360;
+    // Longer rotation for suspense
+    const finalRotation = rotation + EXTRA_ROUNDS * 360 + Math.random() * 360;
+
     setRotation(finalRotation);
 
+    // End spin
     setTimeout(() => {
       const index = calculateWinnerIndex(finalRotation);
       const name = players[index];
@@ -117,7 +130,7 @@ export default function LuckyDrawPage() {
       } else {
         setPrizeCount((c) => c + 1);
       }
-    }, 4600);
+    }, SPIN_DURATION);
   };
 
   return (
@@ -134,12 +147,12 @@ export default function LuckyDrawPage() {
     >
       {showResult && <Confetti />}
 
-      {/* 🎵 BGM TOGGLE (NOT OVERLAPPING WINNERS) */}
+      {/* 🎵 BGM TOGGLE */}
       <div
         style={{
           position: "fixed",
           top: 20,
-          right: 360, // 👈 avoid Winners panel
+          right: 360,
           display: "flex",
           alignItems: "center",
           gap: 10,
@@ -151,8 +164,7 @@ export default function LuckyDrawPage() {
           border: "1px solid rgba(255,255,255,0.3)",
         }}
       >
-        <span style={{ fontSize: 14, opacity: 0.9 }}>🎵 Background Music</span>
-
+        <span style={{ fontSize: 14 }}>🎵 Background Music</span>
         <button
           onClick={() => setBgmEnabled((p) => !p)}
           style={{

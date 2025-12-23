@@ -1,12 +1,14 @@
 interface ResultModalProps {
   winner: string;
-  onClose: () => void;
+  onAccept: () => void;
+  onRespin: () => void;
 }
 
-/**
- * Simple result popup
- */
-export default function ResultModal({ winner, onClose }: ResultModalProps) {
+export default function ResultModal({
+  winner,
+  onAccept,
+  onRespin,
+}: ResultModalProps) {
   return (
     <div
       style={{
@@ -16,47 +18,106 @@ export default function ResultModal({ winner, onClose }: ResultModalProps) {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        zIndex: 50,
+        zIndex: 999,
       }}
-      onClick={onClose}
     >
       <div
         style={{
-          background: "rgba(255,255,255,0.12)",
-          backdropFilter: "blur(12px)",
-          borderRadius: 20,
-          padding: "32px 48px",
+          background: "rgba(255,255,255,0.14)",
+          backdropFilter: "blur(14px)",
+          padding: "36px 40px",
+          borderRadius: 22,
           textAlign: "center",
-          boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
+          color: "#fff",
+          minWidth: 360,
+          border: "1px solid rgba(255,255,255,0.25)",
+          boxShadow: "0 20px 60px rgba(0,0,0,0.4)",
         }}
-        onClick={(e) => e.stopPropagation()}
       >
-        <h2 style={{ fontSize: 28, marginBottom: 12 }}>🎉 Congratulations!</h2>
-        <p
+        {/* TITLE */}
+        <h2
           style={{
-            fontSize: 36,
-            fontWeight: "bold",
-            color: "#ffd54f",
-            marginBottom: 24,
+            fontSize: 22,
+            fontWeight: 600,
+            marginBottom: 12,
+            letterSpacing: 0.5,
+          }}
+        >
+          ✨ Congratulations
+        </h2>
+
+        {/* WINNER NAME */}
+        <div
+          style={{
+            fontSize: 28,
+            fontWeight: 700,
+            marginBottom: 28,
           }}
         >
           {winner}
-        </p>
+        </div>
 
-        <button
-          onClick={onClose}
+        {/* ACTIONS */}
+        <div
           style={{
-            padding: "10px 28px",
-            fontSize: 18,
-            borderRadius: 12,
-            border: "2px solid white",
-            background: "transparent",
-            color: "white",
-            cursor: "pointer",
+            display: "flex",
+            justifyContent: "center",
+            gap: 16,
           }}
         >
-          Close
-        </button>
+          {/* RE-SPIN */}
+          <button
+            onClick={onRespin}
+            style={{
+              padding: "12px 26px",
+              borderRadius: 14,
+              border: "1px solid rgba(255,255,255,0.6)",
+              background: "transparent",
+              color: "#fff",
+              cursor: "pointer",
+              fontSize: 15,
+              fontWeight: 500,
+              transition: "all 0.2s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "rgba(255,255,255,0.15)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "transparent";
+            }}
+          >
+            Re-spin
+          </button>
+
+          {/* CONFIRM */}
+          <button
+            onClick={onAccept}
+            style={{
+              padding: "12px 30px",
+              borderRadius: 14,
+              border: "none",
+              background: "linear-gradient(135deg, #4caf50, #43a047)",
+              color: "#fff",
+              cursor: "pointer",
+              fontSize: 15,
+              fontWeight: 600,
+              transition: "transform 0.15s ease, box-shadow 0.15s ease",
+              boxShadow: "0 6px 20px rgba(76,175,80,0.4)",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = "translateY(-1px)";
+              e.currentTarget.style.boxShadow =
+                "0 10px 28px rgba(76,175,80,0.55)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow =
+                "0 6px 20px rgba(76,175,80,0.4)";
+            }}
+          >
+            Confirm
+          </button>
+        </div>
       </div>
     </div>
   );

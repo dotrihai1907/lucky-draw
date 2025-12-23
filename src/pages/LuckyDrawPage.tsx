@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Confetti from "react-confetti";
 import useSound from "use-sound";
 
@@ -24,24 +24,34 @@ type WinnerRecord = {
   player: string;
 };
 
-// ================== TIMING CONFIG ==================
-const SPIN_DURATION = 8500; // ⬅️ total spin time (8.5s)
-const SPIN_FADE_OUT_AT = 7500; // ⬅️ fade sound near the end
-const EXTRA_ROUNDS = 9; // ⬅️ more full rotations
-// ===================================================
+/* ===== TIMING CONFIG ===== */
+const SPIN_DURATION = 8500;
+const SPIN_FADE_OUT_AT = 7500;
+const EXTRA_ROUNDS = 9;
+/* ========================= */
 
 export default function LuckyDrawPage() {
-  const [players, setPlayers] = useState<string[]>(ALL_PLAYERS);
+  /* ===== FIXED PLAYERS ===== */
+  const [players] = useState<string[]>(ALL_PLAYERS);
+
+  /* ===== ROTATION ===== */
+  const rotationRef = useRef(0);
   const [rotation, setRotation] = useState(0);
 
+  /* ===== PRIZE FLOW ===== */
   const [prizeIndex, setPrizeIndex] = useState(0);
   const [prizeCount, setPrizeCount] = useState(0);
 
+  /* ===== RESULT ===== */
   const [winner, setWinner] = useState<string | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [spinning, setSpinning] = useState(false);
 
+  /* ===== WINNERS ===== */
   const [winners, setWinners] = useState<WinnerRecord[]>([]);
+  const [pendingWinner, setPendingWinner] = useState<WinnerRecord | null>(null);
+
+  const pickedPlayersRef = useRef<Set<string>>(new Set());
 
   /* ===== BGM ===== */
   const [bgmEnabled, setBgmEnabled] = useState(false);
@@ -51,7 +61,6 @@ export default function LuckyDrawPage() {
     loop: true,
   });
 
-  /* ===== SPIN & WIN SOUNDS ===== */
   const [playSpin, { sound: spinSound }] = useSound("/sounds/spin.mp3", {
     volume: 0.4,
   });
@@ -65,21 +74,19 @@ export default function LuckyDrawPage() {
 
   /* ===== BGM EFFECT ===== */
   useEffect(() => {
-    if (bgmEnabled) {
-      playBgm();
-    } else {
-      bgmSound?.stop();
-    }
+    if (bgmEnabled) playBgm();
+    else bgmSound?.stop();
   }, [bgmEnabled, playBgm, bgmSound]);
 
-  /* ===== WINNER CALC ===== */
-  const calculateWinnerIndex = (finalRotation: number) => {
+  /* ===== CALCULATE WINNER ===== */
+  const getWinnerByRotation = (finalRotation: number) => {
     const normalized = ((finalRotation % 360) + 360) % 360;
     const pointerAngle = (360 - normalized) % 360;
-    return Math.floor(pointerAngle / sliceAngle);
+    const index = Math.floor(pointerAngle / sliceAngle);
+    return players[index];
   };
 
-  /* ===== SPIN HANDLER ===== */
+  /* ===== SPIN ===== */
   const spin = () => {
     if (spinning || !currentPrize) return;
 
@@ -87,50 +94,72 @@ export default function LuckyDrawPage() {
     setShowResult(false);
     setWinner(null);
 
-    // Reset & play spin sound
     spinSound?.stop();
     spinSound?.volume(0.4);
     playSpin();
 
-    // Fade out spin sound near the end
     setTimeout(() => {
       spinSound?.fade(0.4, 0, 800);
     }, SPIN_FADE_OUT_AT);
 
-    // Longer rotation for suspense
-    const finalRotation = rotation + EXTRA_ROUNDS * 360 + Math.random() * 360;
+    const nextRotation =
+      rotationRef.current + EXTRA_ROUNDS * 360 + Math.random() * 360;
 
-    setRotation(finalRotation);
+    rotationRef.current = nextRotation;
+    setRotation(nextRotation);
 
-    // End spin
     setTimeout(() => {
-      const index = calculateWinnerIndex(finalRotation);
-      const name = players[index];
+      let selected = getWinnerByRotation(nextRotation);
+
+      let guard = 0;
+      while (pickedPlayersRef.current.has(selected) && guard < 10) {
+        selected = players[Math.floor(Math.random() * players.length)];
+        guard++;
+      }
+
+      pickedPlayersRef.current.add(selected);
 
       playWin();
 
-      setWinners((prev) => [
-        ...prev,
-        {
-          prizeId: currentPrize.id,
-          prizeName: currentPrize.name,
-          player: name,
-        },
-      ]);
+      setPendingWinner({
+        prizeId: currentPrize.id,
+        prizeName: currentPrize.name,
+        player: selected,
+      });
 
-      setPlayers((prev) => prev.filter((_, i) => i !== index));
-
-      setWinner(name);
+      setWinner(selected);
       setShowResult(true);
       setSpinning(false);
-
-      if (prizeCount + 1 >= currentPrize.count) {
-        setPrizeIndex((p) => p + 1);
-        setPrizeCount(0);
-      } else {
-        setPrizeCount((c) => c + 1);
-      }
     }, SPIN_DURATION);
+  };
+
+  /* ===== ACCEPT WINNER ===== */
+  const handleAcceptWinner = () => {
+    setShowResult(false);
+
+    if (!pendingWinner || !currentPrize) return;
+
+    setWinners((prev) => [...prev, pendingWinner]);
+
+    if (prizeCount + 1 === currentPrize.count) {
+      setPrizeIndex((p) => p + 1);
+      setPrizeCount(0);
+    } else {
+      setPrizeCount((c) => c + 1);
+    }
+
+    setPendingWinner(null);
+  };
+
+  /* ===== RE-SPIN ===== */
+  const handleRespin = () => {
+    setShowResult(false);
+
+    if (pendingWinner) {
+      pickedPlayersRef.current.delete(pendingWinner.player);
+    }
+
+    setPendingWinner(null);
   };
 
   return (
@@ -161,7 +190,6 @@ export default function LuckyDrawPage() {
           backdropFilter: "blur(8px)",
           padding: "8px 14px",
           borderRadius: 20,
-          border: "1px solid rgba(255,255,255,0.3)",
         }}
       >
         <span style={{ fontSize: 14 }}>🎵 Background Music</span>
@@ -174,7 +202,6 @@ export default function LuckyDrawPage() {
             border: "none",
             background: bgmEnabled ? "#4caf50" : "#555",
             position: "relative",
-            cursor: "pointer",
           }}
         >
           <span
@@ -246,21 +273,22 @@ export default function LuckyDrawPage() {
           padding: 20,
           background: "rgba(255,255,255,0.08)",
           backdropFilter: "blur(10px)",
-          overflowY: "auto",
         }}
       >
-        <h3 style={{ marginBottom: 12 }}>🏆 Winners</h3>
+        <h3>🏆 Winners</h3>
         {winners.map((w, i) => (
-          <div key={i} style={{ marginBottom: 6 }}>
-            <strong>{w.prizeName}</strong>
-            <br />
-            {w.player}
+          <div key={i}>
+            <strong>{w.prizeName}</strong> – {w.player}
           </div>
         ))}
       </div>
 
       {showResult && winner && (
-        <ResultModal winner={winner} onClose={() => setShowResult(false)} />
+        <ResultModal
+          winner={winner}
+          onAccept={handleAcceptWinner}
+          onRespin={handleRespin}
+        />
       )}
     </div>
   );

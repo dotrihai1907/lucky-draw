@@ -1,13 +1,18 @@
 interface LuckyWheelProps {
   names: string[];
   rotation: number;
+  highlightedIndex?: number | null;
 }
 
 const VIEWBOX = 1000;
 const CENTER = VIEWBOX / 2;
 const RADIUS = 480;
 
-export default function LuckyWheel({ names, rotation }: LuckyWheelProps) {
+export default function LuckyWheel({
+  names,
+  rotation,
+  highlightedIndex,
+}: LuckyWheelProps) {
   const sliceAngle = 360 / names.length;
 
   return (
@@ -21,7 +26,6 @@ export default function LuckyWheel({ names, rotation }: LuckyWheelProps) {
           transformOrigin: "50% 50%",
           transform: `rotate(${rotation - 90}deg)`,
           transition: "transform 7s cubic-bezier(0.17,0.67,0.12,0.99)",
-          // 👆 MUST MATCH SPIN_DURATION
         }}
       >
         {names.map((name, index) => {
@@ -42,8 +46,11 @@ export default function LuckyWheel({ names, rotation }: LuckyWheelProps) {
           const ty =
             CENTER + textRadius * Math.sin((Math.PI * textAngle) / 180);
 
+          const isWinner = index === highlightedIndex;
+
           return (
             <g key={`${name}-${index}`}>
+              {/* Slice */}
               <path
                 d={`
                   M ${CENTER} ${CENTER}
@@ -52,17 +59,31 @@ export default function LuckyWheel({ names, rotation }: LuckyWheelProps) {
                   Z
                 `}
                 fill={`hsl(${index * (360 / names.length)}, 80%, 55%)`}
+                style={{
+                  filter: isWinner
+                    ? "drop-shadow(0 0 18px rgba(255,255,255,0.9))"
+                    : "none",
+                  transform: isWinner ? "scale(1.02)" : "scale(1)",
+                  transformOrigin: "50% 50%",
+                  transition: "all 0.4s ease",
+                }}
               />
 
+              {/* Label */}
               <text
                 x={tx}
                 y={ty}
                 fill="#fff"
                 fontSize="32"
-                fontWeight="600"
+                fontWeight={isWinner ? "800" : "600"}
                 textAnchor="middle"
                 dominantBaseline="middle"
                 transform={`rotate(${textAngle} ${tx} ${ty})`}
+                style={{
+                  filter: isWinner
+                    ? "drop-shadow(0 0 6px rgba(255,255,255,1))"
+                    : "none",
+                }}
               >
                 {name}
               </text>

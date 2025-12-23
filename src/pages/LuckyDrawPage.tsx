@@ -150,11 +150,10 @@ export default function LuckyDrawPage() {
         setWinners([]);
         setPrizeIndex(0);
         setPrizeCount(0);
-        setRotation(0);
+        setWinner(null);
 
         pickedPlayersRef.current.clear();
         setDisabledPlayers(new Set());
-        setSidebarOpen(false);
       } catch {
         toast.error("Failed to read file.");
       }
@@ -220,6 +219,17 @@ export default function LuckyDrawPage() {
       setShowResult(true);
       setSpinning(false);
     }, SPIN_DURATION);
+  };
+
+  /* ===== RESTART ===== */
+  const restart = () => {
+    setWinners([]);
+    setPrizeIndex(0);
+    setPrizeCount(0);
+    setWinner(null);
+
+    pickedPlayersRef.current.clear();
+    setDisabledPlayers(new Set());
   };
 
   /* ===== ACCEPT WINNER ===== */
@@ -300,7 +310,16 @@ export default function LuckyDrawPage() {
           color: "#fff",
           fontSize: 20,
           cursor: spinning ? "not-allowed" : "pointer",
+          transition: "all 0.25s ease",
           zIndex: 120,
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.15)";
+          e.currentTarget.style.scale = "1.02";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.boxShadow = "none";
+          e.currentTarget.style.scale = "1";
         }}
       >
         ☰
@@ -446,7 +465,7 @@ export default function LuckyDrawPage() {
             justifyContent: "center",
           }}
         >
-          {currentPrize && (
+          {currentPrize ? (
             <div style={{ textAlign: "center", marginBottom: 12 }}>
               <h2
                 style={{
@@ -457,6 +476,19 @@ export default function LuckyDrawPage() {
               </h2>
               <p style={{ opacity: 0.7 }}>
                 {prizeCount + 1} / {currentPrize.count}
+              </p>
+            </div>
+          ) : (
+            <div style={{ textAlign: "center", marginBottom: 12 }}>
+              <h2
+                style={{
+                  fontFamily: "var(--font-title)",
+                }}
+              >
+                🎊 Lucky Draw Completed
+              </h2>
+              <p style={{ opacity: 0.7 }}>
+                All prizes have been successfully drawn.
               </p>
             </div>
           )}
@@ -473,8 +505,8 @@ export default function LuckyDrawPage() {
           </div>
 
           <button
-            onClick={spin}
-            disabled={spinning || !currentPrize}
+            onClick={currentPrize ? spin : restart}
+            disabled={spinning}
             style={{
               marginTop: 24,
               padding: "16px 46px",
@@ -501,7 +533,7 @@ export default function LuckyDrawPage() {
               e.currentTarget.style.transform = "translateY(0)";
             }}
           >
-            SPIN
+            {currentPrize ? "SPIN" : "RESTART"}
           </button>
         </div>
       ) : (

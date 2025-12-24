@@ -15,51 +15,6 @@ import WheelAction from "../components/WheelAction";
 import WheelHeader from "../components/WheelHeader";
 import SidebarButton from "../components/SidebarButton";
 
-const ALL_PLAYERS = [
-  "Emma",
-  "David",
-  "Frank",
-  "Grace",
-  "Helen",
-  "Ian",
-  "Jack",
-  "Kevin",
-  "Linda",
-  "Mia",
-  "Nina",
-  "Oliver",
-  "Paul",
-  "Quinn",
-  "Rachel",
-  "Sam",
-  "Tina",
-  "Uma",
-  "Vera",
-  "Walt",
-  "Xena",
-  "Yara",
-  "Zane",
-  "Alice",
-  "Bob",
-  "Cathy",
-  "Derek",
-  "Eva",
-  "Fred",
-  "Gina",
-  "Harry",
-  "Ivy",
-  "Jason",
-  "Kathy",
-  "Liam",
-  "Molly",
-  "Nate",
-  "Olivia",
-  "Pete",
-  "Queenie",
-  "Rob",
-  "Sophie",
-];
-
 type WinnerRecord = {
   prizeId: string;
   prizeName: string;
@@ -77,7 +32,7 @@ export default function LuckyDrawPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   /* =====  PLAYERS ===== */
-  const [players, setPlayers] = useState<string[]>(ALL_PLAYERS);
+  const [players, setPlayers] = useState<string[]>([]);
 
   /* ===== ROTATION ===== */
   const rotationRef = useRef(0);
@@ -137,20 +92,22 @@ export default function LuckyDrawPage() {
 
         const rows = XLSX.utils.sheet_to_json(sheet, {
           header: 1,
+          defval: "",
         }) as string[][];
 
         const names = rows
+          .slice(1)
           .flat()
           .map((n) => String(n).trim())
           .filter(Boolean);
 
         if (names.length === 0) {
-          toast.error("File has not any valid names");
+          toast.error("No players detected.");
           return;
         }
 
-        // RESET draw state
-        toast.success(`Loaded ${names.length} participants!`);
+        // RESET STATE
+        toast.success(`Uploaded ${names.length} players.`);
 
         setPlayers(names);
         setWinners([]);
@@ -199,7 +156,7 @@ export default function LuckyDrawPage() {
       targetAngle -
       (rotationRef.current % 360);
 
-    // 4️⃣ SPIN
+    // 4️⃣ Spin
     spinSound?.stop();
     spinSound?.volume(0.6);
     playSpin();
@@ -211,7 +168,7 @@ export default function LuckyDrawPage() {
     rotationRef.current = nextRotation;
     setRotation(nextRotation);
 
-    // 5️⃣ END SPIN
+    // 5️⃣ End spin
     setTimeout(() => {
       playWin();
 
@@ -247,7 +204,7 @@ export default function LuckyDrawPage() {
     // add to winners list
     setWinners((prev) => [...prev, pendingWinner]);
 
-    // 🔑 SYNC REF + STATE
+    // 🔑 sync ref + state
     pickedPlayersRef.current.add(pendingWinner.player);
     setDisabledPlayers(new Set(pickedPlayersRef.current));
 

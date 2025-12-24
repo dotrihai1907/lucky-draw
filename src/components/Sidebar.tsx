@@ -1,9 +1,25 @@
+import * as XLSX from "xlsx";
+
 interface SidebarProps {
   players: string[];
   onClose: () => void;
   onUpload: (file: File) => void;
   disabledPlayers: Set<string>;
 }
+
+const downloadTemplate = () => {
+  const ws = XLSX.utils.aoa_to_sheet([
+    ["Name"],
+    ["Emma"],
+    ["David"],
+    ["Frank"],
+  ]);
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Players");
+
+  XLSX.writeFile(wb, "players_template.xlsx");
+};
 
 export default function Sidebar(props: SidebarProps) {
   const { onClose, players, onUpload, disabledPlayers } = props;
@@ -51,6 +67,12 @@ export default function Sidebar(props: SidebarProps) {
             fontFamily: "Fredoka, sans-serif",
             transition: "all 0.25s ease",
           }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.15)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.boxShadow = "none";
+          }}
         >
           <input
             type="file"
@@ -65,12 +87,50 @@ export default function Sidebar(props: SidebarProps) {
 
           <div style={{ fontSize: 18, marginBottom: 6 }}>📄 Upload Excel</div>
           <div style={{ fontSize: 13, opacity: 0.7 }}>(.xlsx / .xls)</div>
+          <div
+            style={{
+              marginTop: 10,
+              fontSize: 12,
+              opacity: 0.7,
+              lineHeight: 1.4,
+            }}
+          >
+            Single column named <strong>Name</strong>
+          </div>
         </label>
+
+        {!players.length && (
+          <button
+            onClick={downloadTemplate}
+            style={{
+              marginTop: 12,
+              padding: "6px",
+              borderRadius: 12,
+              background: "rgba(255,255,255,0.08)",
+              border: "1px dashed rgba(255,255,255,0.35)",
+              color: "#fff",
+              fontSize: 13,
+              cursor: "pointer",
+              transition: "all 0.2s ease",
+              width: "100%",
+              fontFamily: "Fredoka, sans-serif",
+              opacity: 0.7,
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.15)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.boxShadow = "none";
+            }}
+          >
+            ⬇ Download template
+          </button>
+        )}
 
         <div
           style={{
             marginTop: 16,
-            maxHeight: "calc(100vh - 220px)",
+            maxHeight: "calc(100vh - 240px)",
             overflowY: "auto",
             fontSize: 14,
           }}

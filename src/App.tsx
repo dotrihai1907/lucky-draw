@@ -7,7 +7,7 @@ export default function App() {
       <LuckyDrawPage />
 
       <Toaster
-        position="top-right"
+        position="top-center"
         toastOptions={{
           style: {
             background: "rgba(30,30,30,0.85)",

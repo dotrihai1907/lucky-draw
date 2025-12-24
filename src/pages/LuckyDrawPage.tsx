@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import Confetti from "react-confetti";
 import useSound from "use-sound";
+import * as XLSX from "xlsx";
 
+import toast from "react-hot-toast";
 import LuckyWheel from "../components/LuckyWheel";
 import ResultModal from "../components/ResultModal";
-import { PRIZES } from "../data/prizes";
 import { BG_GRADIENT, GLASS_CARD } from "../constants/colors";
+import { PRIZES } from "../data/prizes";
 
 const ALL_PLAYERS = [
   "Emma",
@@ -17,6 +19,39 @@ const ALL_PLAYERS = [
   "Jack",
   "Kevin",
   "Linda",
+  "Mia",
+  "Nina",
+  "Oliver",
+  "Paul",
+  "Quinn",
+  "Rachel",
+  "Sam",
+  "Tina",
+  "Uma",
+  "Vera",
+  "Walt",
+  "Xena",
+  "Yara",
+  "Zane",
+  "Alice",
+  "Bob",
+  "Cathy",
+  "Derek",
+  "Eva",
+  "Fred",
+  "Gina",
+  "Harry",
+  "Ivy",
+  "Jason",
+  "Kathy",
+  "Liam",
+  "Molly",
+  "Nate",
+  "Olivia",
+  "Pete",
+  "Queenie",
+  "Rob",
+  "Sophie",
 ];
 
 type WinnerRecord = {
@@ -32,8 +67,11 @@ const EXTRA_ROUNDS = 9;
 /* ========================= */
 
 export default function LuckyDrawPage() {
-  /* ===== FIXED PLAYERS ===== */
-  const [players] = useState<string[]>(ALL_PLAYERS);
+  /* ===== SIDEBAR ===== */
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  /* =====  PLAYERS ===== */
+  const [players, setPlayers] = useState<string[]>(ALL_PLAYERS);
 
   /* ===== ROTATION ===== */
   const rotationRef = useRef(0);
@@ -61,12 +99,12 @@ export default function LuckyDrawPage() {
   const [bgmEnabled, setBgmEnabled] = useState(false);
 
   const [playBgm, { sound: bgmSound }] = useSound("/sounds/bgm.mp3", {
-    volume: 0.1,
+    volume: 0.2,
     loop: true,
   });
 
   const [playSpin, { sound: spinSound }] = useSound("/sounds/spin.mp3", {
-    volume: 0.4,
+    volume: 0.6,
   });
 
   const [playWin] = useSound("/sounds/win.mp3", {
@@ -81,11 +119,54 @@ export default function LuckyDrawPage() {
     else bgmSound?.stop();
   }, [bgmEnabled, playBgm, bgmSound]);
 
+  /* ===== UPLOAD FILE ===== */
+  const handleFileUpload = (file: File) => {
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+      try {
+        const data = new Uint8Array(e.target?.result as ArrayBuffer);
+        const workbook = XLSX.read(data, { type: "array" });
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+
+        const rows = XLSX.utils.sheet_to_json(sheet, {
+          header: 1,
+        }) as string[][];
+
+        const names = rows
+          .flat()
+          .map((n) => String(n).trim())
+          .filter(Boolean);
+
+        if (names.length === 0) {
+          toast.error("File has not any valid names");
+          return;
+        }
+
+        // RESET draw state
+        toast.success(`Loaded ${names.length} participants!`);
+
+        setPlayers(names);
+        setWinners([]);
+        setPrizeIndex(0);
+        setPrizeCount(0);
+        setWinner(null);
+
+        pickedPlayersRef.current.clear();
+        setDisabledPlayers(new Set());
+      } catch {
+        toast.error("Failed to read file.");
+      }
+    };
+
+    reader.readAsArrayBuffer(file);
+  };
+
   /* ===== SPIN ===== */
   const spin = () => {
     if (spinning || !currentPrize) return;
 
-    // 1️⃣ Lấy danh sách người CHƯA trúng
+    // 1️⃣ Get list of players who haven't won yet
     const availablePlayers = players.filter(
       (p) => !pickedPlayersRef.current.has(p)
     );
@@ -96,13 +177,13 @@ export default function LuckyDrawPage() {
     setShowResult(false);
     setWinner(null);
 
-    // 2️⃣ CHỌN WINNER TRƯỚC (CHUẨN)
+    // 2️⃣  Select a winner from available players
     const selected =
       availablePlayers[Math.floor(Math.random() * availablePlayers.length)];
 
     const winnerIndex = players.indexOf(selected);
 
-    // 3️⃣ TÍNH GÓC để mũi tên CHỈ ĐÚNG ô đó
+    // 3️⃣ Calculate angle to point the arrow at the correct slice
     const sliceAngle = 360 / players.length;
     const targetAngle = 360 - (winnerIndex * sliceAngle + sliceAngle / 2);
 
@@ -112,19 +193,19 @@ export default function LuckyDrawPage() {
       targetAngle -
       (rotationRef.current % 360);
 
-    // 4️⃣ QUAY
+    // 4️⃣ SPIN
     spinSound?.stop();
-    spinSound?.volume(0.4);
+    spinSound?.volume(0.6);
     playSpin();
 
     setTimeout(() => {
-      spinSound?.fade(0.4, 0, 800);
+      spinSound?.fade(0.6, 0, 800);
     }, SPIN_FADE_OUT_AT);
 
     rotationRef.current = nextRotation;
     setRotation(nextRotation);
 
-    // 5️⃣ KẾT THÚC
+    // 5️⃣ END SPIN
     setTimeout(() => {
       playWin();
 
@@ -138,6 +219,17 @@ export default function LuckyDrawPage() {
       setShowResult(true);
       setSpinning(false);
     }, SPIN_DURATION);
+  };
+
+  /* ===== RESTART ===== */
+  const restart = () => {
+    setWinners([]);
+    setPrizeIndex(0);
+    setPrizeCount(0);
+    setWinner(null);
+
+    pickedPlayersRef.current.clear();
+    setDisabledPlayers(new Set());
   };
 
   /* ===== ACCEPT WINNER ===== */
@@ -199,6 +291,40 @@ export default function LuckyDrawPage() {
     >
       {showResult && <Confetti />}
 
+      {/* SIDEBAR BUTTON */}
+      <button
+        onClick={() => {
+          if (spinning) return;
+          setSidebarOpen((prev) => !prev);
+        }}
+        style={{
+          position: "fixed",
+          top: 20,
+          left: 20,
+          width: 42,
+          height: 42,
+          borderRadius: 14,
+          background: "rgba(255,255,255,0.14)",
+          backdropFilter: "blur(10px)",
+          border: "1px solid rgba(255,255,255,0.25)",
+          color: "#fff",
+          fontSize: 20,
+          cursor: spinning ? "not-allowed" : "pointer",
+          transition: "all 0.25s ease",
+          zIndex: 120,
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.15)";
+          e.currentTarget.style.scale = "1.02";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.boxShadow = "none";
+          e.currentTarget.style.scale = "1";
+        }}
+      >
+        ☰
+      </button>
+
       {/* 🎵 BGM TOGGLE */}
       <div
         style={{
@@ -242,74 +368,237 @@ export default function LuckyDrawPage() {
       </div>
 
       {/* LEFT */}
-      <div
-        style={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        {currentPrize && (
-          <div style={{ textAlign: "center", marginBottom: 12 }}>
-            <h2
+      {sidebarOpen && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.4)",
+            zIndex: 200,
+          }}
+          onClick={() => setSidebarOpen(false)}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              width: 320,
+              height: "100%",
+              padding: 20,
+              animation: "slideIn 0.25s ease",
+              background: "rgba(255,255,255,0.10)",
+              border: "1px solid rgba(255,255,255,0.22)",
+              boxShadow: "0 20px 50px rgba(0,0,0,0.35)",
+              backdropFilter: "blur(18px)",
+              WebkitBackdropFilter: "blur(18px)",
+              borderRadius: "0 20px 20px 0",
+            }}
+          >
+            <h3 style={{ fontFamily: "var(--font-title)", fontSize: 22 }}>
+              🎯 Participants
+            </h3>
+
+            <label
               style={{
-                fontFamily: "var(--font-title)",
+                display: "block",
+                padding: "16px",
+                borderRadius: 18,
+                border: "1px dashed rgba(255,255,255,0.35)",
+                background: "rgba(255,255,255,0.08)",
+                backdropFilter: "blur(12px)",
+                textAlign: "center",
+                cursor: "pointer",
+                color: "#fff",
+                fontFamily: "Fredoka, sans-serif",
+                transition: "all 0.25s ease",
               }}
             >
-              🎁 {currentPrize.name}
-            </h2>
-            <p style={{ opacity: 0.7 }}>
-              {prizeCount + 1} / {currentPrize.count}
-            </p>
+              <input
+                type="file"
+                accept=".xlsx,.xls"
+                style={{ display: "none" }}
+                onChange={(e) => {
+                  if (e.target.files?.[0]) {
+                    handleFileUpload(e.target.files[0]);
+                  }
+                }}
+              />
+
+              <div style={{ fontSize: 18, marginBottom: 6 }}>
+                📄 Upload Excel
+              </div>
+              <div style={{ fontSize: 13, opacity: 0.7 }}>(.xlsx / .xls)</div>
+            </label>
+
+            <div
+              style={{
+                marginTop: 16,
+                maxHeight: "calc(100vh - 220px)",
+                overflowY: "auto",
+                fontSize: 14,
+              }}
+            >
+              {players.map((p, i) => (
+                <div
+                  key={i}
+                  style={{
+                    padding: "8px 12px",
+                    borderRadius: 8,
+                    opacity: disabledPlayers.has(p) ? 0.4 : 1,
+                  }}
+                >
+                  {i + 1}. {p}
+                </div>
+              ))}
+            </div>
           </div>
-        )}
-
-        <div style={{ width: "min(55vh, 520px)", height: "min(55vh, 520px)" }}>
-          <LuckyWheel
-            names={players}
-            rotation={rotation}
-            disabledNames={disabledPlayers}
-            highlightName={showResult ? winner : null}
-          />
         </div>
+      )}
 
-        <button
-          onClick={spin}
-          disabled={spinning || !currentPrize}
+      {/* CENTER */}
+      {players.length ? (
+        <div
           style={{
-            marginTop: 24,
-            padding: "16px 46px",
-            fontSize: 18,
-            fontFamily: "Fredoka, sans-serif",
-            letterSpacing: 1,
-            borderRadius: 18,
-            border: "1px solid rgba(255,255,255,0.35)",
-            background: `linear-gradient(135deg,rgba(255,255,255,0.28),rgba(255,255,255,0.08))`,
-            backdropFilter: "blur(14px)",
-            color: "#fff",
-            cursor: spinning ? "not-allowed" : "pointer",
-            boxShadow: `0 10px 30px rgba(0,0,0,0.35), inset 0 0 0 rgba(255,255,255,0.4)`,
-            transition: "all 0.25s ease",
-            opacity: spinning ? 0.5 : 1,
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.boxShadow =
-              "0 14px 40px rgba(120,180,255,0.45)";
-            e.currentTarget.style.transform = "translateY(-2px)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.boxShadow = "0 10px 30px rgba(0,0,0,0.35)";
-            e.currentTarget.style.transform = "translateY(0)";
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
-          SPIN
-        </button>
-      </div>
+          {currentPrize ? (
+            <div style={{ textAlign: "center", marginBottom: 12 }}>
+              <h2
+                style={{
+                  fontFamily: "var(--font-title)",
+                }}
+              >
+                🎁 {currentPrize.name}
+              </h2>
+              <p style={{ opacity: 0.7 }}>
+                {prizeCount + 1} / {currentPrize.count}
+              </p>
+            </div>
+          ) : (
+            <div style={{ textAlign: "center", marginBottom: 12 }}>
+              <h2
+                style={{
+                  fontFamily: "var(--font-title)",
+                }}
+              >
+                🎊 Lucky Draw Completed
+              </h2>
+              <p style={{ opacity: 0.7 }}>
+                All prizes have been successfully drawn.
+              </p>
+            </div>
+          )}
+
+          <div
+            style={{ width: "min(55vh, 520px)", height: "min(55vh, 520px)" }}
+          >
+            <LuckyWheel
+              names={players}
+              rotation={rotation}
+              disabledNames={disabledPlayers}
+              highlightName={showResult ? winner : null}
+            />
+          </div>
+
+          <button
+            onClick={currentPrize ? spin : restart}
+            disabled={spinning}
+            style={{
+              marginTop: 24,
+              padding: "16px 46px",
+              fontSize: 18,
+              fontFamily: "Fredoka, sans-serif",
+              letterSpacing: 1,
+              borderRadius: 18,
+              border: "1px solid rgba(255,255,255,0.35)",
+              background: `linear-gradient(135deg,rgba(255,255,255,0.28),rgba(255,255,255,0.08))`,
+              backdropFilter: "blur(14px)",
+              color: "#fff",
+              cursor: spinning ? "not-allowed" : "pointer",
+              boxShadow: `0 10px 30px rgba(0,0,0,0.35), inset 0 0 0 rgba(255,255,255,0.4)`,
+              transition: "all 0.25s ease",
+              opacity: spinning ? 0.5 : 1,
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.boxShadow =
+                "0 14px 40px rgba(120,180,255,0.45)";
+              e.currentTarget.style.transform = "translateY(-2px)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.boxShadow = "0 10px 30px rgba(0,0,0,0.35)";
+              e.currentTarget.style.transform = "translateY(0)";
+            }}
+          >
+            {currentPrize ? "SPIN" : "RESTART"}
+          </button>
+        </div>
+      ) : (
+        <div
+          style={{
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <div
+            style={{
+              width: "100%",
+              height: "100%",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              textAlign: "center",
+            }}
+          >
+            {/* ICON */}
+            <div style={{ fontSize: 48, marginBottom: 20, opacity: 0.9 }}>
+              🎯
+            </div>
+
+            {/* TITLE */}
+            <div
+              style={{
+                fontSize: 22,
+                fontWeight: 600,
+                marginBottom: 10,
+                fontFamily: "Fredoka, sans-serif",
+              }}
+            >
+              No players yet
+            </div>
+
+            {/* SUBTEXT */}
+            <div
+              style={{
+                fontSize: 15,
+                opacity: 0.75,
+                maxWidth: 320,
+                lineHeight: 1.5,
+              }}
+            >
+              Upload an Excel file from the menu to start the lucky draw.
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* RIGHT */}
-      <div style={{ width: 320, padding: 20, ...GLASS_CARD }}>
+      <div
+        style={{
+          width: 320,
+          padding: 20,
+          ...GLASS_CARD,
+          borderRadius: "20px 0 0 20px",
+          overflowY: "auto",
+        }}
+      >
         <h3 style={{ fontFamily: "var(--font-title)", fontSize: 22 }}>
           🏆 Lucky Persons
         </h3>

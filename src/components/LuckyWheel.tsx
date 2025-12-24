@@ -9,6 +9,11 @@ const VIEWBOX = 1000;
 const CENTER = VIEWBOX / 2;
 const RADIUS = 480;
 
+function truncateText(text: string, maxLength: number) {
+  if (text.length <= maxLength) return text;
+  return text.slice(0, maxLength - 1) + "…";
+}
+
 export default function LuckyWheel({
   names,
   rotation,
@@ -16,6 +21,8 @@ export default function LuckyWheel({
   highlightName = null,
 }: LuckyWheelProps) {
   const sliceAngle = 360 / names.length;
+
+  const dynamicFontSize = names.length > 50 ? 22 : names.length > 30 ? 26 : 32;
 
   return (
     <svg
@@ -74,17 +81,17 @@ export default function LuckyWheel({
                 x={tx}
                 y={ty}
                 fill="#fff"
-                fontSize="32"
                 fontWeight="600"
                 textAnchor="middle"
                 dominantBaseline="middle"
+                fontSize={dynamicFontSize}
                 transform={`rotate(${textAngle} ${tx} ${ty})`}
                 style={{
                   opacity: isDisabled ? 0.35 : 1,
                   filter: isHighlight ? "drop-shadow(0 0 6px white)" : "none",
                 }}
               >
-                {name}
+                {truncateText(name, 10)}
               </text>
             </g>
           );

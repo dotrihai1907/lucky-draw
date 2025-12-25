@@ -27,8 +27,47 @@ export default function LuckyWheel({
   return (
     <svg
       viewBox={`0 0 ${VIEWBOX} ${VIEWBOX}`}
-      style={{ width: "100%", height: "100%" }}
+      style={{ width: "100%", height: "100%", overflow: "visible" }}
     >
+      {/* ===== MODERN GLASS GLOW RING ===== */}
+      <defs>
+        <radialGradient id="ringGlow" cx="50%" cy="50%" r="60%">
+          <stop offset="0%" stopColor="rgba(255,255,255,0.35)" />
+          <stop offset="70%" stopColor="rgba(255,255,255,0.09)" />
+          <stop offset="100%" stopColor="rgba(255,255,255,0.0)" />
+        </radialGradient>
+      </defs>
+
+      {/* OUTER SOFT GLOW */}
+      <circle
+        cx={CENTER}
+        cy={CENTER}
+        r={RADIUS * 1.09}
+        fill="url(#ringGlow)"
+        style={{ filter: "blur(40px)" }}
+      />
+
+      {/* SUBTILE HIGHLIGHT RIM  */}
+      <circle
+        cx={CENTER}
+        cy={CENTER}
+        r={RADIUS * 1.03}
+        stroke="rgba(255,255,255,0.45)"
+        strokeWidth={RADIUS * 0.018}
+        fill="none"
+        style={{ filter: "blur(6px)" }}
+      />
+
+      {/* GLASS EDGE RING */}
+      <circle
+        cx={CENTER}
+        cy={CENTER}
+        r={RADIUS * 1.015}
+        stroke="rgba(255,255,255,0.25)"
+        strokeWidth={RADIUS * 0.01}
+        fill="none"
+      />
+
       {/* ===== ROTATING WHEEL ===== */}
       <g
         style={{

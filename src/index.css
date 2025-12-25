@@ -66,6 +66,21 @@ body {
   }
 }
 
+@keyframes sparkleFade {
+  0% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.4);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+}
+
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
@@ -74,4 +89,10 @@ input[type="number"]::-webkit-outer-spin-button {
 
 input[type="number"] {
   appearance: textfield;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #ccd2d8;
+  opacity: 1;
 }

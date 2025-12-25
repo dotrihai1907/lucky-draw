@@ -5,6 +5,8 @@ import * as XLSX from "xlsx";
 
 import toast from "react-hot-toast";
 import EmptyPlayer from "../components/EmptyPlayer";
+import EmptyPrize from "../components/EmptyPrize";
+import GalaxySparkles from "../components/GalaxySparkles";
 import LuckyWheel from "../components/LuckyWheel";
 import ResultModal from "../components/ResultModal";
 import SettingsButton from "../components/SettingsButton";
@@ -15,7 +17,6 @@ import WheelAction from "../components/WheelAction";
 import WheelHeader from "../components/WheelHeader";
 import WinnersByPrize from "../components/WinnersByPrize";
 import { BG_GRADIENT } from "../constants/colors";
-import EmptyPrize from "../components/EmptyPrize";
 
 interface WinnerRecord {
   prizeName: string;
@@ -251,6 +252,9 @@ export default function LuckyDrawPage() {
       }}
     >
       {showResult && <Confetti />}
+
+      <GalaxySparkles count={60} maxSize={3} color="rgba(255,255,255,0.9)" />
+      <GalaxySparkles count={28} maxSize={5} color="rgb(223, 243, 255)" />
 
       <SidebarButton
         spinning={spinning}

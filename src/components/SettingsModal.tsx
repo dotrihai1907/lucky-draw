@@ -64,8 +64,10 @@ export default function SettingModal({
           borderRadius: "1.375rem",
           color: "#fff",
           minWidth: "22.5rem",
+          maxHeight: "90vh",
           border: "0.0625rem solid rgba(255,255,255,0.25)",
           boxShadow: "0 1.25rem 3.75rem rgba(0,0,0,0.4)",
+          overflowY: "auto",
         }}
       >
         {/* TITLE */}

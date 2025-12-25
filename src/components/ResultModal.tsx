@@ -24,23 +24,23 @@ export default function ResultModal({
       <div
         style={{
           background: "rgba(255,255,255,0.14)",
-          backdropFilter: "blur(14px)",
-          padding: "36px 40px",
-          borderRadius: 22,
+          backdropFilter: "blur(0.875rem)",
+          padding: "2.25rem 2.5rem",
+          borderRadius: "1.375rem",
           textAlign: "center",
           color: "#fff",
-          minWidth: 360,
-          border: "1px solid rgba(255,255,255,0.25)",
-          boxShadow: "0 20px 60px rgba(0,0,0,0.4)",
+          minWidth: "22.5rem",
+          border: "0.0625rem solid rgba(255,255,255,0.25)",
+          boxShadow: "0 1.25rem 3.75rem rgba(0,0,0,0.4)",
         }}
       >
         {/* TITLE */}
         <h2
           style={{
-            fontSize: 22,
+            fontSize: "1.375rem",
             fontWeight: 600,
-            marginBottom: 12,
-            letterSpacing: 0.5,
+            marginBottom: "0.75rem",
+            letterSpacing: "0.03125rem",
           }}
         >
           ✨ Congratulations
@@ -49,9 +49,9 @@ export default function ResultModal({
         {/* WINNER NAME */}
         <div
           style={{
-            fontSize: 28,
+            fontSize: "1.75rem",
             fontWeight: 700,
-            marginBottom: 28,
+            marginBottom: "1.75rem",
           }}
         >
           {winner}
@@ -62,22 +62,23 @@ export default function ResultModal({
           style={{
             display: "flex",
             justifyContent: "center",
-            gap: 16,
+            gap: "1rem",
           }}
         >
           {/* RE-SPIN */}
           <button
             onClick={onRespin}
             style={{
-              padding: "12px 26px",
-              borderRadius: 14,
-              border: "1px solid rgba(255,255,255,0.6)",
+              padding: "0.75rem 1.625rem",
+              borderRadius: "0.875rem",
+              border: "0.0625rem solid rgba(255,255,255,0.6)",
               background: "transparent",
               color: "#fff",
               cursor: "pointer",
-              fontSize: 15,
+              fontSize: "0.9375rem",
               fontWeight: 500,
               transition: "all 0.2s ease",
+              fontFamily: "var(--font-body)",
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.background = "rgba(255,255,255,0.15)";
@@ -93,26 +94,27 @@ export default function ResultModal({
           <button
             onClick={onAccept}
             style={{
-              padding: "12px 30px",
-              borderRadius: 14,
+              padding: "0.75rem 1.875rem",
+              borderRadius: "0.875rem",
               border: "none",
               background: "linear-gradient(135deg, #4caf50, #43a047)",
               color: "#fff",
               cursor: "pointer",
-              fontSize: 15,
+              fontSize: "0.9375rem",
               fontWeight: 600,
               transition: "transform 0.15s ease, box-shadow 0.15s ease",
-              boxShadow: "0 6px 20px rgba(76,175,80,0.4)",
+              boxShadow: "0 0.375rem 1.25rem rgba(76,175,80,0.4)",
+              fontFamily: "var(--font-body)",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.transform = "translateY(-1px)";
+              e.currentTarget.style.transform = "translateY(-0.0625rem)";
               e.currentTarget.style.boxShadow =
-                "0 10px 28px rgba(76,175,80,0.55)";
+                "0 0.625rem 1.75rem rgba(76,175,80,0.55)";
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = "translateY(0)";
               e.currentTarget.style.boxShadow =
-                "0 6px 20px rgba(76,175,80,0.4)";
+                "0 0.375rem 1.25rem rgba(76,175,80,0.4)";
             }}
           >
             Confirm

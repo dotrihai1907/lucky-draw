@@ -1,9 +1,9 @@
-interface SidebarButtonProps {
+interface SettingsButtonProps {
   spinning: boolean;
   onClick: () => void;
 }
 
-export default function SidebarButton(props: SidebarButtonProps) {
+export default function SettingsButton(props: SettingsButtonProps) {
   const { spinning, onClick } = props;
 
   return (
@@ -14,22 +14,23 @@ export default function SidebarButton(props: SidebarButtonProps) {
       }}
       style={{
         position: "fixed",
-        top: "1.25rem",
+        bottom: "1.25rem",
         left: "1.25rem",
         width: "2.625rem",
         height: "2.625rem",
-        borderRadius: "0.875rem",
+        borderRadius: "50%",
         background: "rgba(255,255,255,0.14)",
         backdropFilter: "blur(0.625rem)",
-        border: "0.0625rem solid rgba(255,255,255,0.25)",
         color: "#fff",
         fontSize: "1.25rem",
+        border: "0.0625rem solid rgba(255,255,255,0.25)",
+        boxShadow: "0 0.5rem 1.625rem rgba(0,0,0,0.4)",
         cursor: spinning ? "not-allowed" : "pointer",
         transition: "all 0.25s ease",
-        zIndex: 120,
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.boxShadow = "0 0.5rem 1.5rem rgba(0,0,0,0.15)";
+        e.currentTarget.style.boxShadow =
+          "0 0.5rem 1.5rem rgba(120,180,255,0.35)";
         e.currentTarget.style.scale = "1.02";
       }}
       onMouseLeave={(e) => {
@@ -37,7 +38,7 @@ export default function SidebarButton(props: SidebarButtonProps) {
         e.currentTarget.style.scale = "1";
       }}
     >
-      ☰
+      ⚙
     </button>
   );
 }

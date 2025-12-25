@@ -4,22 +4,28 @@ import useSound from "use-sound";
 import * as XLSX from "xlsx";
 
 import toast from "react-hot-toast";
+import EmptyPlayer from "../components/EmptyPlayer";
 import LuckyWheel from "../components/LuckyWheel";
 import ResultModal from "../components/ResultModal";
-import { BG_GRADIENT, GLASS_CARD } from "../constants/colors";
-import { PRIZES } from "../data/prizes";
+import SettingsButton from "../components/SettingsButton";
+import SettingsModal from "../components/SettingsModal";
 import Sidebar from "../components/Sidebar";
-import WinnersByPrize from "../components/WinnersByPrize";
-import EmptyPlayer from "../components/EmptyPlayer";
+import SidebarButton from "../components/SidebarButton";
 import WheelAction from "../components/WheelAction";
 import WheelHeader from "../components/WheelHeader";
-import SidebarButton from "../components/SidebarButton";
+import WinnersByPrize from "../components/WinnersByPrize";
+import { BG_GRADIENT } from "../constants/colors";
+import EmptyPrize from "../components/EmptyPrize";
 
-type WinnerRecord = {
-  prizeId: string;
+interface WinnerRecord {
   prizeName: string;
   player: string;
-};
+}
+
+interface Prize {
+  name: string;
+  count: number;
+}
 
 /* ===== TIMING CONFIG ===== */
 const SPIN_DURATION = 8500;
@@ -31,8 +37,14 @@ export default function LuckyDrawPage() {
   /* ===== SIDEBAR ===== */
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  /* ===== SETTINGS ===== */
+  const [showSettings, setShowSettings] = useState(false);
+
   /* =====  PLAYERS ===== */
   const [players, setPlayers] = useState<string[]>([]);
+
+  /* =====  PRIZES ===== */
+  const [prizes, setPrizes] = useState<Prize[]>([]);
 
   /* ===== ROTATION ===== */
   const rotationRef = useRef(0);
@@ -72,7 +84,7 @@ export default function LuckyDrawPage() {
     volume: 0.8,
   });
 
-  const currentPrize = PRIZES[prizeIndex];
+  const currentPrize = prizes[prizeIndex];
 
   /* ===== BGM EFFECT ===== */
   useEffect(() => {
@@ -172,12 +184,7 @@ export default function LuckyDrawPage() {
     setTimeout(() => {
       playWin();
 
-      setPendingWinner({
-        prizeId: currentPrize.id,
-        prizeName: currentPrize.name,
-        player: selected,
-      });
-
+      setPendingWinner({ prizeName: currentPrize.name, player: selected });
       setWinner(selected);
       setShowResult(true);
       setSpinning(false);
@@ -250,47 +257,6 @@ export default function LuckyDrawPage() {
         onClick={() => setSidebarOpen((prev) => !prev)}
       />
 
-      <div
-        style={{
-          position: "fixed",
-          top: 20,
-          right: 360,
-          display: "flex",
-          alignItems: "center",
-          gap: 10,
-          zIndex: 100,
-          padding: "8px 14px",
-          ...GLASS_CARD,
-        }}
-      >
-        <span style={{ fontSize: 14 }}>🎵 Background Music</span>
-        <button
-          onClick={() => setBgmEnabled((p) => !p)}
-          style={{
-            width: 42,
-            height: 22,
-            borderRadius: 11,
-            border: "none",
-            background: bgmEnabled ? "#4caf50" : "#555",
-            position: "relative",
-            cursor: "pointer",
-          }}
-        >
-          <span
-            style={{
-              position: "absolute",
-              top: 2,
-              left: bgmEnabled ? 22 : 2,
-              width: 18,
-              height: 18,
-              borderRadius: "50%",
-              background: "#fff",
-              transition: "left 0.2s ease",
-            }}
-          />
-        </button>
-      </div>
-
       {sidebarOpen && (
         <Sidebar
           players={players}
@@ -300,7 +266,7 @@ export default function LuckyDrawPage() {
         />
       )}
 
-      {players.length ? (
+      {!!players.length && !!prizes.length ? (
         <div
           style={{
             flex: 1,
@@ -313,7 +279,10 @@ export default function LuckyDrawPage() {
           <WheelHeader currentPrize={currentPrize} prizeCount={prizeCount} />
 
           <div
-            style={{ width: "min(55vh, 520px)", height: "min(55vh, 520px)" }}
+            style={{
+              width: "min(55vh, 32.5rem)",
+              height: "min(55vh, 32.5rem)",
+            }}
           >
             <LuckyWheel
               names={players}
@@ -330,17 +299,35 @@ export default function LuckyDrawPage() {
             currentPrize={currentPrize}
           />
         </div>
+      ) : !players.length ? (
+        <EmptyPlayer onClick={() => setSidebarOpen(true)} />
       ) : (
-        <EmptyPlayer />
+        <EmptyPrize onClick={() => setShowSettings(true)} />
       )}
 
       <WinnersByPrize winners={winners} />
+
+      <SettingsButton
+        spinning={spinning}
+        onClick={() => setShowSettings((prev) => !prev)}
+      />
 
       {showResult && winner && (
         <ResultModal
           winner={winner}
           onAccept={handleAcceptWinner}
           onRespin={handleRespin}
+        />
+      )}
+
+      {showSettings && (
+        <SettingsModal
+          prizes={prizes}
+          onRestart={restart}
+          setPrizes={setPrizes}
+          bgmEnabled={bgmEnabled}
+          onClose={() => setShowSettings(false)}
+          onChangeBgm={() => setBgmEnabled((prev) => !prev)}
         />
       )}
     </div>

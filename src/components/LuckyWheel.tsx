@@ -22,7 +22,7 @@ export default function LuckyWheel({
 }: LuckyWheelProps) {
   const sliceAngle = 360 / names.length;
 
-  const dynamicFontSize = names.length > 50 ? 22 : names.length > 30 ? 26 : 32;
+  const dynamicFontSize = Math.max(18, 48 - names.length * 0.4);
 
   return (
     <svg
@@ -70,7 +70,7 @@ export default function LuckyWheel({
                 style={{
                   opacity: isDisabled ? 0.25 : 1,
                   filter: isHighlight
-                    ? "drop-shadow(0 0 20px rgba(255,255,255,0.8))"
+                    ? "drop-shadow(0 0 1.25rem rgba(255,255,255,0.8))"
                     : "none",
                   transition: "opacity 0.4s ease",
                 }}
@@ -88,7 +88,9 @@ export default function LuckyWheel({
                 transform={`rotate(${textAngle} ${tx} ${ty})`}
                 style={{
                   opacity: isDisabled ? 0.35 : 1,
-                  filter: isHighlight ? "drop-shadow(0 0 6px white)" : "none",
+                  filter: isHighlight
+                    ? "drop-shadow(0 0 0.375rem white)"
+                    : "none",
                 }}
               >
                 {truncateText(name, 10)}
@@ -104,9 +106,7 @@ export default function LuckyWheel({
         <polygon
           points={`${CENTER - 26},18 ${CENTER + 26},18 ${CENTER},72`}
           fill="rgba(255,255,255,0.25)"
-          style={{
-            filter: "blur(6px)",
-          }}
+          style={{ filter: "blur(0.375rem)" }}
         />
 
         {/* Main pointer */}
@@ -114,7 +114,7 @@ export default function LuckyWheel({
           points={`${CENTER - 18},20 ${CENTER + 18},20 ${CENTER},64`}
           fill="rgba(255,255,255,0.9)"
           style={{
-            filter: "drop-shadow(0 6px 14px rgba(255,255,255,0.35))",
+            filter: "drop-shadow(0 0.375rem 0.875rem rgba(255,255,255,0.35))",
           }}
         />
 

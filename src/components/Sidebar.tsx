@@ -37,30 +37,30 @@ export default function Sidebar(props: SidebarProps) {
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
-          width: 320,
+          width: "20rem",
           height: "100%",
-          padding: 20,
+          padding: "1.25rem",
           animation: "slideIn 0.25s ease",
           background: "rgba(255,255,255,0.10)",
-          border: "1px solid rgba(255,255,255,0.22)",
-          boxShadow: "0 20px 50px rgba(0,0,0,0.35)",
-          backdropFilter: "blur(18px)",
-          WebkitBackdropFilter: "blur(18px)",
-          borderRadius: "0 20px 20px 0",
+          border: "0.0625rem solid rgba(255,255,255,0.22)",
+          boxShadow: "0 1.25rem 3.125rem rgba(0,0,0,0.35)",
+          backdropFilter: "blur(1.125rem)",
+          WebkitBackdropFilter: "blur(1.125rem)",
+          borderRadius: "0 1.25rem 1.25rem 0",
         }}
       >
-        <h3 style={{ fontFamily: "var(--font-title)", fontSize: 22 }}>
+        <h3 style={{ fontFamily: "var(--font-title)", fontSize: "1.375rem" }}>
           🎯 Participants ({players.length})
         </h3>
 
         <label
           style={{
             display: "block",
-            padding: "16px",
-            borderRadius: 18,
-            border: "1px dashed rgba(255,255,255,0.35)",
+            padding: "1rem",
+            borderRadius: "1.125rem",
+            border: "0.0625rem dashed rgba(255,255,255,0.35)",
             background: "rgba(255,255,255,0.08)",
-            backdropFilter: "blur(12px)",
+            backdropFilter: "blur(0.75rem)",
             textAlign: "center",
             cursor: "pointer",
             color: "#fff",
@@ -68,7 +68,8 @@ export default function Sidebar(props: SidebarProps) {
             transition: "all 0.25s ease",
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.15)";
+            e.currentTarget.style.boxShadow =
+              "0 0.5rem 1.5rem rgba(0,0,0,0.15)";
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.boxShadow = "none";
@@ -85,12 +86,16 @@ export default function Sidebar(props: SidebarProps) {
             }}
           />
 
-          <div style={{ fontSize: 18, marginBottom: 6 }}>📄 Upload Excel</div>
-          <div style={{ fontSize: 13, opacity: 0.7 }}>(.xlsx / .xls)</div>
+          <div style={{ fontSize: "1.125rem", marginBottom: "0.375rem" }}>
+            📄 Upload Excel
+          </div>
+          <div style={{ fontSize: "0.8125rem", opacity: 0.7 }}>
+            (.xlsx / .xls)
+          </div>
           <div
             style={{
-              marginTop: 10,
-              fontSize: 12,
+              marginTop: "0.625rem",
+              fontSize: "0.75rem",
               opacity: 0.7,
               lineHeight: 1.4,
             }}
@@ -103,13 +108,13 @@ export default function Sidebar(props: SidebarProps) {
           <button
             onClick={downloadTemplate}
             style={{
-              marginTop: 12,
-              padding: "6px",
-              borderRadius: 12,
+              marginTop: "0.75rem",
+              padding: "0.375rem",
+              borderRadius: "0.75rem",
               background: "rgba(255,255,255,0.08)",
-              border: "1px dashed rgba(255,255,255,0.35)",
+              border: "0.0625rem dashed rgba(255,255,255,0.35)",
               color: "#fff",
-              fontSize: 13,
+              fontSize: "0.8125rem",
               cursor: "pointer",
               transition: "all 0.2s ease",
               width: "100%",
@@ -117,7 +122,8 @@ export default function Sidebar(props: SidebarProps) {
               opacity: 0.7,
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.15)";
+              e.currentTarget.style.boxShadow =
+                "0 0.5rem 1.5rem rgba(0,0,0,0.15)";
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.boxShadow = "none";
@@ -129,18 +135,18 @@ export default function Sidebar(props: SidebarProps) {
 
         <div
           style={{
-            marginTop: 16,
-            maxHeight: "calc(100vh - 240px)",
+            marginTop: "1rem",
+            maxHeight: "calc(100vh - 15rem)",
             overflowY: "auto",
-            fontSize: 14,
+            fontSize: "0.875rem",
           }}
         >
           {players.map((p, i) => (
             <div
               key={i}
               style={{
-                padding: "8px 12px",
-                borderRadius: 8,
+                padding: "0.5rem 0.75rem",
+                borderRadius: "0.5rem",
                 opacity: disabledPlayers.has(p) ? 0.4 : 1,
               }}
             >

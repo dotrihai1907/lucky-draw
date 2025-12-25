@@ -1,5 +1,10 @@
+interface Prize {
+  name: string;
+  count: number;
+}
+
 interface WheelHeaderProps {
-  currentPrize: { id: string; name: string; count: number };
+  currentPrize: Prize;
   prizeCount: number;
 }
 
@@ -7,7 +12,7 @@ export default function WheelHeader(props: WheelHeaderProps) {
   const { currentPrize, prizeCount } = props;
 
   return currentPrize ? (
-    <div style={{ textAlign: "center", marginBottom: 12 }}>
+    <div style={{ textAlign: "center", marginBottom: "0.75rem" }}>
       <h2 style={{ fontFamily: "var(--font-title)" }}>
         🎁 {currentPrize.name}
       </h2>
@@ -16,7 +21,7 @@ export default function WheelHeader(props: WheelHeaderProps) {
       </p>
     </div>
   ) : (
-    <div style={{ textAlign: "center", marginBottom: 12 }}>
+    <div style={{ textAlign: "center", marginBottom: "0.75rem" }}>
       <h2 style={{ fontFamily: "var(--font-title)" }}>
         🎊 Lucky Draw Completed
       </h2>

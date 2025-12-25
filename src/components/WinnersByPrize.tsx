@@ -1,10 +1,9 @@
 import { GLASS_CARD } from "../constants/colors";
 
-type WinnerRecord = {
-  prizeId: string;
+interface WinnerRecord {
   prizeName: string;
   player: string;
-};
+}
 
 interface WinnersByPrizeProps {
   winners: WinnerRecord[];
@@ -23,14 +22,14 @@ export default function WinnersByPrize({ winners }: WinnersByPrizeProps) {
   return (
     <div
       style={{
-        width: 320,
-        padding: 20,
+        width: "20rem",
+        padding: "1.25rem",
         ...GLASS_CARD,
-        borderRadius: "20px 0 0 20px",
+        borderRadius: "1.25rem 0 0 1.25rem",
         overflowY: "auto",
       }}
     >
-      <h3 style={{ fontFamily: "var(--font-title)", fontSize: 22 }}>
+      <h3 style={{ fontFamily: "var(--font-title)", fontSize: "1.375rem" }}>
         🏆 Lucky Persons
       </h3>
 
@@ -40,20 +39,22 @@ export default function WinnersByPrize({ winners }: WinnersByPrizeProps) {
           style={{
             display: "flex",
             flexDirection: "column",
-            marginBottom: 20,
-            gap: 16,
+            marginBottom: "1.25rem",
+            gap: "1rem",
           }}
         >
-          <div style={{ fontWeight: 700, fontSize: 18 }}>🎁 {prizeName}</div>
+          <div style={{ fontWeight: 700, fontSize: "1.125rem" }}>
+            🎁 {prizeName}
+          </div>
 
           {list.map((w, i) => (
             <div
               key={i}
               style={{
-                padding: "8px 12px",
-                borderRadius: 8,
+                padding: "0.5rem 0.75rem",
+                borderRadius: "0.5rem",
                 background: "rgba(255,255,255,0.08)",
-                boxShadow: "0 8px 24px rgba(0,0,0,0.35)",
+                boxShadow: "0 0.5rem 1.5rem rgba(0,0,0,0.35)",
               }}
             >
               {i + 1}. {w.player}

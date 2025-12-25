@@ -1,8 +1,8 @@
-interface EmptyPlayerProps {
+interface EmptyPrizeProps {
   onClick: () => void;
 }
 
-export default function EmptyPlayer(props: EmptyPlayerProps) {
+export default function EmptyPrize(props: EmptyPrizeProps) {
   const { onClick } = props;
 
   return (
@@ -40,17 +40,17 @@ export default function EmptyPlayer(props: EmptyPlayerProps) {
             marginBottom: "0.625rem",
           }}
         >
-          No players loaded
+          No prize configured yet
         </p>
 
         <p
           style={{
             fontSize: "0.875rem",
             opacity: 0.6,
-            width: "75%",
+            width: "70%",
           }}
         >
-          Please upload player list from menu to start the draw.
+          Please open <strong>Settings</strong> and create prize list first
         </p>
 
         <button
@@ -75,7 +75,7 @@ export default function EmptyPlayer(props: EmptyPlayerProps) {
             e.currentTarget.style.background = "transparent";
           }}
         >
-          Upload Players
+          Open Settings
         </button>
       </div>
     </div>

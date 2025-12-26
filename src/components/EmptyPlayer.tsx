@@ -50,7 +50,7 @@ export default function EmptyPlayer(props: EmptyPlayerProps) {
             width: "75%",
           }}
         >
-          Please upload player list from menu to start the draw.
+          Please upload player list from menu to start the draw
         </p>
 
         <button

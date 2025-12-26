@@ -108,11 +108,17 @@ export default function LuckyDrawPage() {
           defval: "",
         }) as string[][];
 
-        const names = rows
-          .slice(1)
-          .flat()
-          .map((n) => String(n).trim())
-          .filter(Boolean);
+        const names = [
+          ...new Set(
+            rows
+              .slice(1)
+              .flat()
+              .map((n) => String(n).trim())
+              .map((n) => n.replace(/\s+/g, " "))
+              .map((n) => n.normalize("NFC"))
+              .filter((n) => n.length > 0)
+          ),
+        ];
 
         if (names.length === 0) {
           toast.error("No players detected.");
@@ -154,8 +160,9 @@ export default function LuckyDrawPage() {
     setWinner(null);
 
     // 2️⃣  Select a winner from available players
+    const randomValue = crypto.getRandomValues(new Uint32Array(1))[0] / 2 ** 32;
     const selected =
-      availablePlayers[Math.floor(Math.random() * availablePlayers.length)];
+      availablePlayers[Math.floor(randomValue * availablePlayers.length)];
 
     const winnerIndex = players.indexOf(selected);
 

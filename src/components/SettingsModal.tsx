@@ -135,7 +135,7 @@ export default function SettingModal({
             fontStyle: "italic",
           }}
         >
-          Prizes will be drawn in order from top to bottom.
+          Prizes will be drawn in order from top to bottom
         </p>
 
         {prizes.map((p, i) => (

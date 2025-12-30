@@ -1,11 +1,11 @@
 import * as XLSX from "xlsx";
 
-interface SidebarProps {
+type SidebarProps = {
   players: string[];
   onClose: () => void;
   onUpload: (file: File) => void;
   disabledPlayers: Set<string>;
-}
+};
 
 const downloadTemplate = () => {
   const ws = XLSX.utils.aoa_to_sheet([

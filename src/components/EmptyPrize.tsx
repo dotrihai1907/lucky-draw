@@ -1,6 +1,4 @@
-interface EmptyPrizeProps {
-  onClick: () => void;
-}
+type EmptyPrizeProps = { onClick: () => void };
 
 export default function EmptyPrize(props: EmptyPrizeProps) {
   const { onClick } = props;

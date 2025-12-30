@@ -17,22 +17,15 @@ import WheelAction from "../components/WheelAction";
 import WheelHeader from "../components/WheelHeader";
 import WinnersByPrize from "../components/WinnersByPrize";
 import { BG_GRADIENT } from "../constants/colors";
+import type { Prize, WinnerRecord } from "../types";
+import LotteryDisplay from "../components/Lottery";
 
-interface WinnerRecord {
-  prizeName: string;
-  player: string;
-}
-
-interface Prize {
-  name: string;
-  count: number;
-}
+type GameMode = "wheel" | "lottery";
 
 /* ===== TIMING CONFIG ===== */
 const SPIN_DURATION = 8500;
 const SPIN_FADE_OUT_AT = 7500;
 const EXTRA_ROUNDS = 9;
-/* ========================= */
 
 export default function LuckyDrawPage() {
   /* ===== SIDEBAR ===== */
@@ -84,6 +77,9 @@ export default function LuckyDrawPage() {
   const [playWin] = useSound("/sounds/win.mp3", {
     volume: 0.8,
   });
+
+  /* ===== MODE GAME ===== */
+  const [mode, setMode] = useState<GameMode>("lottery");
 
   const currentPrize = prizes[prizeIndex];
 
@@ -164,39 +160,50 @@ export default function LuckyDrawPage() {
     const selected =
       availablePlayers[Math.floor(randomValue * availablePlayers.length)];
 
-    const winnerIndex = players.indexOf(selected);
+    if (mode === "wheel") {
+      const winnerIndex = players.indexOf(selected);
 
-    // 3️⃣ Calculate angle to point the arrow at the correct slice
-    const sliceAngle = 360 / players.length;
-    const targetAngle = 360 - (winnerIndex * sliceAngle + sliceAngle / 2);
+      // 3️⃣ Calculate angle to point the arrow at the correct slice
+      const sliceAngle = 360 / players.length;
+      const targetAngle = 360 - (winnerIndex * sliceAngle + sliceAngle / 2);
 
-    const nextRotation =
-      rotationRef.current +
-      EXTRA_ROUNDS * 360 +
-      targetAngle -
-      (rotationRef.current % 360);
+      const nextRotation =
+        rotationRef.current +
+        EXTRA_ROUNDS * 360 +
+        targetAngle -
+        (rotationRef.current % 360);
 
-    // 4️⃣ Spin
-    spinSound?.stop();
-    spinSound?.volume(0.6);
-    playSpin();
+      // 4️⃣ Spin
+      spinSound?.stop();
+      spinSound?.volume(0.6);
+      playSpin();
 
-    setTimeout(() => {
-      spinSound?.fade(0.6, 0, 800);
-    }, SPIN_FADE_OUT_AT);
+      setTimeout(() => {
+        spinSound?.fade(0.6, 0, 800);
+      }, SPIN_FADE_OUT_AT);
 
-    rotationRef.current = nextRotation;
-    setRotation(nextRotation);
+      rotationRef.current = nextRotation;
+      setRotation(nextRotation);
 
-    // 5️⃣ End spin
-    setTimeout(() => {
-      playWin();
+      // 5️⃣ End spin
+      setTimeout(() => {
+        playWin();
 
-      setPendingWinner({ prizeName: currentPrize.name, player: selected });
-      setWinner(selected);
-      setShowResult(true);
-      setSpinning(false);
-    }, SPIN_DURATION);
+        setPendingWinner({ prizeName: currentPrize.name, player: selected });
+        setWinner(selected);
+        setShowResult(true);
+        setSpinning(false);
+      }, SPIN_DURATION);
+    } else {
+      playSpin();
+      setTimeout(() => {
+        playWin();
+        setPendingWinner({ prizeName: currentPrize.name, player: selected });
+        setWinner(selected);
+        setShowResult(true);
+        setSpinning(false);
+      }, 5000);
+    }
   };
 
   /* ===== RESTART ===== */
@@ -246,6 +253,11 @@ export default function LuckyDrawPage() {
     setPendingWinner(null);
   };
 
+  /* ===== TOGGLE MODE ===== */
+  const handleToggleMode = () => {
+    setMode((prev) => (prev === "wheel" ? "lottery" : "wheel"));
+  };
+
   return (
     <div
       style={{
@@ -289,19 +301,28 @@ export default function LuckyDrawPage() {
         >
           <WheelHeader currentPrize={currentPrize} prizeCount={prizeCount} />
 
-          <div
-            style={{
-              width: "min(55vh, 32.5rem)",
-              height: "min(55vh, 32.5rem)",
-            }}
-          >
-            <LuckyWheel
-              names={players}
-              rotation={rotation}
-              disabledNames={disabledPlayers}
-              highlightName={showResult ? winner : null}
+          {mode === "wheel" ? (
+            <div
+              style={{
+                width: "min(55vh, 32.5rem)",
+                height: "min(55vh, 32.5rem)",
+              }}
+            >
+              <LuckyWheel
+                names={players}
+                rotation={rotation}
+                disabledNames={disabledPlayers}
+                highlightName={showResult ? winner : null}
+              />
+            </div>
+          ) : (
+            <LotteryDisplay
+              players={players}
+              disabled={disabledPlayers}
+              spinning={spinning}
+              winner={winner}
             />
-          </div>
+          )}
 
           <WheelAction
             spin={spin}
@@ -333,10 +354,12 @@ export default function LuckyDrawPage() {
 
       {showSettings && (
         <SettingsModal
+          mode={mode}
           prizes={prizes}
           onRestart={restart}
           setPrizes={setPrizes}
           bgmEnabled={bgmEnabled}
+          onToggleMode={handleToggleMode}
           onClose={() => setShowSettings(false)}
           onChangeBgm={() => setBgmEnabled((prev) => !prev)}
         />

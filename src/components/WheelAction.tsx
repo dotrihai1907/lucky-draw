@@ -1,14 +1,11 @@
-interface Prize {
-  name: string;
-  count: number;
-}
+import type { Prize } from "../types";
 
-interface WheelActionProps {
+type WheelActionProps = {
   currentPrize: Prize;
   spin: () => void;
   restart: () => void;
   spinning: boolean;
-}
+};
 
 export default function WheelAction(props: WheelActionProps) {
   const { currentPrize, spin, restart, spinning } = props;

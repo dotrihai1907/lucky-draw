@@ -1,9 +1,9 @@
-interface LuckyWheelProps {
+type LuckyWheelProps = {
   names: string[];
   rotation: number;
   disabledNames?: Set<string>;
   highlightName?: string | null;
-}
+};
 
 const VIEWBOX = 1000;
 const CENTER = VIEWBOX / 2;

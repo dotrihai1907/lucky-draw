@@ -1,6 +1,4 @@
-interface EmptyPlayerProps {
-  onClick: () => void;
-}
+type EmptyPlayerProps = { onClick: () => void };
 
 export default function EmptyPlayer(props: EmptyPlayerProps) {
   const { onClick } = props;

@@ -1,12 +1,6 @@
-interface Prize {
-  name: string;
-  count: number;
-}
+import type { Prize } from "../types";
 
-interface WheelHeaderProps {
-  currentPrize: Prize;
-  prizeCount: number;
-}
+type WheelHeaderProps = { currentPrize: Prize; prizeCount: number };
 
 export default function WheelHeader(props: WheelHeaderProps) {
   const { currentPrize, prizeCount } = props;

@@ -1,7 +1,4 @@
-interface SidebarButtonProps {
-  spinning: boolean;
-  onClick: () => void;
-}
+type SidebarButtonProps = { spinning: boolean; onClick: () => void };
 
 export default function SidebarButton(props: SidebarButtonProps) {
   const { spinning, onClick } = props;

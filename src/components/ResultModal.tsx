@@ -1,14 +1,12 @@
-interface ResultModalProps {
+type ResultModalProps = {
   winner: string;
   onAccept: () => void;
   onRespin: () => void;
-}
+};
 
-export default function ResultModal({
-  winner,
-  onAccept,
-  onRespin,
-}: ResultModalProps) {
+export default function ResultModal(props: ResultModalProps) {
+  const { winner, onAccept, onRespin } = props;
+
   return (
     <div
       style={{

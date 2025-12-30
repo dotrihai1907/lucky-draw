@@ -1,7 +1,4 @@
-interface SettingsButtonProps {
-  spinning: boolean;
-  onClick: () => void;
-}
+type SettingsButtonProps = { spinning: boolean; onClick: () => void };
 
 export default function SettingsButton(props: SettingsButtonProps) {
   const { spinning, onClick } = props;

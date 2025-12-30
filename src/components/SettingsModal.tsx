@@ -1,27 +1,29 @@
 import { useMemo, useState } from "react";
+import type { GameMode, Prize } from "../types";
 
-interface Prize {
-  name: string;
-  count: number;
-}
-
-interface SettingModalProps {
-  onClose: () => void;
-  bgmEnabled: boolean;
-  onChangeBgm: () => void;
-  onRestart: () => void;
+type SettingModalProps = {
   prizes: Prize[];
+  mode: GameMode;
+  bgmEnabled: boolean;
+  onClose: () => void;
+  onRestart: () => void;
+  onChangeBgm: () => void;
+  onToggleMode: () => void;
   setPrizes: React.Dispatch<React.SetStateAction<Prize[]>>;
-}
+};
 
-export default function SettingModal({
-  onClose,
-  bgmEnabled,
-  onChangeBgm,
-  prizes,
-  setPrizes,
-  onRestart,
-}: SettingModalProps) {
+export default function SettingModal(props: SettingModalProps) {
+  const {
+    mode,
+    prizes,
+    onClose,
+    setPrizes,
+    onRestart,
+    bgmEnabled,
+    onChangeBgm,
+    onToggleMode,
+  } = props;
+
   const [newPrize, setNewPrize] = useState({ name: "", count: "" });
 
   const disabled = useMemo(
@@ -75,7 +77,7 @@ export default function SettingModal({
           style={{
             fontSize: "1.375rem",
             fontWeight: 600,
-            marginBottom: "0.75rem",
+            margin: "0.75rem 0",
             letterSpacing: "0.03125rem",
             textAlign: "center",
           }}
@@ -91,7 +93,7 @@ export default function SettingModal({
             alignItems: "center",
           }}
         >
-          <h3 style={{ fontSize: "1.0625rem", marginBottom: "0.625rem" }}>
+          <h3 style={{ fontSize: "1.0625rem", margin: "0.75rem 0" }}>
             🎵 Background Music
           </h3>
 
@@ -122,8 +124,56 @@ export default function SettingModal({
           </button>
         </div>
 
+        {/* GAME MODE TOGGLE */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <h3 style={{ fontSize: "1.0625rem", margin: "0.75rem 0" }}>
+            🎮 Game Mode
+          </h3>
+
+          <button
+            onClick={onToggleMode}
+            style={{
+              width: "2.875rem",
+              height: "1.5rem",
+              borderRadius: "1.875rem",
+              background: mode === "wheel" ? "#7f9cf58c" : "#b794f48c",
+              border: "none",
+              position: "relative",
+              cursor: "pointer",
+              transition: "background .25s ease",
+              boxShadow: "0 0 10px rgba(255,255,255,0.2) inset",
+            }}
+          >
+            <span
+              style={{
+                position: "absolute",
+                top: "0.125rem",
+                left: mode === "wheel" ? "0.15rem" : "calc(100% - 1.375rem)",
+                width: "1.25rem",
+                height: "1.25rem",
+                borderRadius: "50%",
+                background: "#fff",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "0.82rem",
+                transition: "left .28s cubic-bezier(.25,.8,.25,1)",
+                boxShadow: "0 0 6px rgba(0,0,0,.35)",
+              }}
+            >
+              {mode === "wheel" ? "🎡" : "🎲"}
+            </span>
+          </button>
+        </div>
+
         {/* PRIZE LIST */}
-        <h3 style={{ fontSize: "1.0625rem", marginBottom: "0.75rem" }}>
+        <h3 style={{ fontSize: "1.0625rem", margin: "0.75rem 0" }}>
           🎁 Prize Settings
         </h3>
 

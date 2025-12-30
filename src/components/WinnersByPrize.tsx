@@ -1,15 +1,11 @@
 import { GLASS_CARD } from "../constants/colors";
+import type { WinnerRecord } from "../types";
 
-interface WinnerRecord {
-  prizeName: string;
-  player: string;
-}
+type WinnersByPrizeProps = { winners: WinnerRecord[] };
 
-interface WinnersByPrizeProps {
-  winners: WinnerRecord[];
-}
+export default function WinnersByPrize(props: WinnersByPrizeProps) {
+  const { winners } = props;
 
-export default function WinnersByPrize({ winners }: WinnersByPrizeProps) {
   const winnersByPrize = winners.reduce<Record<string, WinnerRecord[]>>(
     (acc, w) => {
       acc[w.prizeName] = acc[w.prizeName] || [];

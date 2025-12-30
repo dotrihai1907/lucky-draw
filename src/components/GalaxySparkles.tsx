@@ -1,15 +1,9 @@
 /* eslint-disable react-hooks/purity */
-interface GalaxySparklesProps {
-  count?: number;
-  color?: string;
-  maxSize?: number;
-}
+type GalaxySparklesProps = { count?: number; color?: string; maxSize?: number };
 
-export default function GalaxySparkles({
-  count = 70,
-  color = "white",
-  maxSize = 4,
-}: GalaxySparklesProps) {
+export default function GalaxySparkles(props: GalaxySparklesProps) {
+  const { count = 70, color = "white", maxSize = 4 } = props;
+
   return (
     <div
       style={{

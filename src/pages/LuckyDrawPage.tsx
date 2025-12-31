@@ -19,6 +19,7 @@ import WinnersByPrize from "../components/WinnersByPrize";
 import { BG_GRADIENT } from "../constants/colors";
 import type { Prize, WinnerRecord } from "../types";
 import Lottery from "../components/Lottery";
+import { DUMMY_PLAYERS } from "../constants/dummy";
 
 type GameMode = "wheel" | "lottery";
 
@@ -27,8 +28,8 @@ const SPIN_DURATION = 8500;
 const SPIN_FADE_OUT_AT = 7500;
 const EXTRA_ROUNDS = 9;
 
-const LOTTERY_DURATION = 8000;
-const LOTTERY_FADE_OUT_AT = 7000;
+const LOTTERY_DURATION = 7000;
+const LOTTERY_FADE_OUT_AT = 6000;
 
 export default function LuckyDrawPage() {
   /* ===== SIDEBAR ===== */
@@ -38,7 +39,7 @@ export default function LuckyDrawPage() {
   const [showSettings, setShowSettings] = useState(false);
 
   /* =====  PLAYERS ===== */
-  const [players, setPlayers] = useState<string[]>([]);
+  const [players, setPlayers] = useState<string[]>(DUMMY_PLAYERS);
 
   /* =====  PRIZES ===== */
   const [prizes, setPrizes] = useState<Prize[]>([]);

@@ -18,7 +18,7 @@ import WheelHeader from "../components/WheelHeader";
 import WinnersByPrize from "../components/WinnersByPrize";
 import { BG_GRADIENT } from "../constants/colors";
 import type { Prize, WinnerRecord } from "../types";
-import LotteryDisplay from "../components/Lottery";
+import Lottery from "../components/Lottery";
 
 type GameMode = "wheel" | "lottery";
 
@@ -26,6 +26,9 @@ type GameMode = "wheel" | "lottery";
 const SPIN_DURATION = 8500;
 const SPIN_FADE_OUT_AT = 7500;
 const EXTRA_ROUNDS = 9;
+
+const LOTTERY_DURATION = 8000;
+const LOTTERY_FADE_OUT_AT = 7000;
 
 export default function LuckyDrawPage() {
   /* ===== SIDEBAR ===== */
@@ -66,11 +69,15 @@ export default function LuckyDrawPage() {
   const [bgmEnabled, setBgmEnabled] = useState(false);
 
   const [playBgm, { sound: bgmSound }] = useSound("/sounds/bgm.mp3", {
-    volume: 0.2,
+    volume: 0.1,
     loop: true,
   });
 
   const [playSpin, { sound: spinSound }] = useSound("/sounds/spin.mp3", {
+    volume: 0.6,
+  });
+
+  const [playDraw, { sound: drawSound }] = useSound("/sounds/draw.mp3", {
     volume: 0.6,
   });
 
@@ -80,6 +87,9 @@ export default function LuckyDrawPage() {
 
   /* ===== MODE GAME ===== */
   const [mode, setMode] = useState<GameMode>("lottery");
+
+  /* ===== RESET KEY ===== */
+  const [resetKey, setResetKey] = useState(0);
 
   const currentPrize = prizes[prizeIndex];
 
@@ -132,6 +142,8 @@ export default function LuckyDrawPage() {
 
         pickedPlayersRef.current.clear();
         setDisabledPlayers(new Set());
+
+        setResetKey((key) => (key % 2 ? key + 1 : key - 1));
       } catch {
         toast.error("Failed to read file.");
       }
@@ -195,14 +207,24 @@ export default function LuckyDrawPage() {
         setSpinning(false);
       }, SPIN_DURATION);
     } else {
-      playSpin();
+      // 3️⃣ Draw
+      drawSound?.stop();
+      drawSound?.volume(0.6);
+      playDraw();
+
+      setTimeout(() => {
+        drawSound?.fade(0.6, 0, 800);
+      }, LOTTERY_FADE_OUT_AT);
+
+      // 4️⃣ End draw
       setTimeout(() => {
         playWin();
+
         setPendingWinner({ prizeName: currentPrize.name, player: selected });
         setWinner(selected);
         setShowResult(true);
         setSpinning(false);
-      }, 5000);
+      }, LOTTERY_DURATION);
     }
   };
 
@@ -215,6 +237,8 @@ export default function LuckyDrawPage() {
 
     pickedPlayersRef.current.clear();
     setDisabledPlayers(new Set());
+
+    setResetKey((key) => (key % 2 ? key + 1 : key - 1));
   };
 
   /* ===== ACCEPT WINNER ===== */
@@ -316,16 +340,19 @@ export default function LuckyDrawPage() {
               />
             </div>
           ) : (
-            <LotteryDisplay
-              players={players}
+            <Lottery
               disabled={disabledPlayers}
+              showResult={showResult}
               spinning={spinning}
+              resetKey={resetKey}
+              players={players}
               winner={winner}
             />
           )}
 
           <WheelAction
             spin={spin}
+            mode={mode}
             restart={restart}
             spinning={spinning}
             currentPrize={currentPrize}

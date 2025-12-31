@@ -1,14 +1,15 @@
-import type { Prize } from "../types";
+import type { GameMode, Prize } from "../types";
 
 type WheelActionProps = {
   currentPrize: Prize;
   spin: () => void;
   restart: () => void;
   spinning: boolean;
+  mode: GameMode;
 };
 
 export default function WheelAction(props: WheelActionProps) {
-  const { currentPrize, spin, restart, spinning } = props;
+  const { currentPrize, spin, restart, spinning, mode } = props;
 
   return (
     <button
@@ -41,7 +42,7 @@ export default function WheelAction(props: WheelActionProps) {
         e.currentTarget.style.transform = "translateY(0)";
       }}
     >
-      {currentPrize ? "SPIN" : "RESTART"}
+      {currentPrize ? (mode === "wheel" ? "SPIN" : "DRAW") : "RESTART"}
     </button>
   );
 }

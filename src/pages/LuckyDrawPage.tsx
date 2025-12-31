@@ -4,9 +4,11 @@ import useSound from "use-sound";
 import * as XLSX from "xlsx";
 
 import toast from "react-hot-toast";
+import { useWindowSize } from "react-use";
 import EmptyPlayer from "../components/EmptyPlayer";
 import EmptyPrize from "../components/EmptyPrize";
 import GalaxySparkles from "../components/GalaxySparkles";
+import Lottery from "../components/Lottery";
 import LuckyWheel from "../components/LuckyWheel";
 import ResultModal from "../components/ResultModal";
 import SettingsButton from "../components/SettingsButton";
@@ -17,47 +19,44 @@ import WheelAction from "../components/WheelAction";
 import WheelHeader from "../components/WheelHeader";
 import WinnersByPrize from "../components/WinnersByPrize";
 import { BG_GRADIENT } from "../constants/colors";
-import type { Prize, WinnerRecord } from "../types";
-import Lottery from "../components/Lottery";
 import { DUMMY_PLAYERS } from "../constants/dummy";
+import type { GameMode, Prize, WinnerRecord } from "../types";
 
-type GameMode = "wheel" | "lottery";
-
-/* ===== TIMING CONFIG ===== */
+// TIMING CONFIG
 const SPIN_DURATION = 8500;
 const SPIN_FADE_OUT_AT = 7500;
 const EXTRA_ROUNDS = 9;
 
-const LOTTERY_DURATION = 7000;
-const LOTTERY_FADE_OUT_AT = 6000;
+const LOTTERY_DURATION = 6000;
+const LOTTERY_FADE_OUT_AT = 5000;
 
 export default function LuckyDrawPage() {
-  /* ===== SIDEBAR ===== */
+  // SIDEBAR
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  /* ===== SETTINGS ===== */
+  // SETTINGS
   const [showSettings, setShowSettings] = useState(false);
 
-  /* =====  PLAYERS ===== */
+  // PLAYERS
   const [players, setPlayers] = useState<string[]>(DUMMY_PLAYERS);
 
-  /* =====  PRIZES ===== */
+  // PRIZES
   const [prizes, setPrizes] = useState<Prize[]>([]);
 
-  /* ===== ROTATION ===== */
+  // ROTATION
   const rotationRef = useRef(0);
   const [rotation, setRotation] = useState(0);
 
-  /* ===== PRIZE FLOW ===== */
+  // PRIZE FLOW
   const [prizeIndex, setPrizeIndex] = useState(0);
   const [prizeCount, setPrizeCount] = useState(0);
 
-  /* ===== RESULT ===== */
+  // RESULT
   const [winner, setWinner] = useState<string | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [spinning, setSpinning] = useState(false);
 
-  /* ===== WINNERS ===== */
+  // WINNERS
   const [winners, setWinners] = useState<WinnerRecord[]>([]);
   const [pendingWinner, setPendingWinner] = useState<WinnerRecord | null>(null);
 
@@ -66,7 +65,7 @@ export default function LuckyDrawPage() {
     new Set()
   );
 
-  /* ===== BGM ===== */
+  // BGM
   const [bgmEnabled, setBgmEnabled] = useState(false);
 
   const [playBgm, { sound: bgmSound }] = useSound("/sounds/bgm.mp3", {
@@ -86,21 +85,24 @@ export default function LuckyDrawPage() {
     volume: 0.8,
   });
 
-  /* ===== MODE GAME ===== */
+  // SIZE SCREEN
+  const { width, height } = useWindowSize();
+
+  // MODE GAME
   const [mode, setMode] = useState<GameMode>("lottery");
 
-  /* ===== RESET KEY ===== */
+  // RESET KEY
   const [resetKey, setResetKey] = useState(0);
 
   const currentPrize = prizes[prizeIndex];
 
-  /* ===== BGM EFFECT ===== */
+  // BGM EFFECT
   useEffect(() => {
     if (bgmEnabled) playBgm();
     else bgmSound?.stop();
   }, [bgmEnabled, playBgm, bgmSound]);
 
-  /* ===== UPLOAD FILE ===== */
+  // UPLOAD FILE
   const uploadFile = (file: File) => {
     const reader = new FileReader();
 
@@ -153,11 +155,11 @@ export default function LuckyDrawPage() {
     reader.readAsArrayBuffer(file);
   };
 
-  /* ===== SPIN ===== */
+  // SPIN
   const spin = () => {
     if (spinning || !currentPrize) return;
 
-    // 1️⃣ Get list of players who haven't won yet
+    // Get list of players who haven't won yet
     const availablePlayers = players.filter(
       (p) => !pickedPlayersRef.current.has(p)
     );
@@ -168,7 +170,7 @@ export default function LuckyDrawPage() {
     setShowResult(false);
     setWinner(null);
 
-    // 2️⃣  Select a winner from available players
+    // Select a winner from available players
     const randomValue = crypto.getRandomValues(new Uint32Array(1))[0] / 2 ** 32;
     const selected =
       availablePlayers[Math.floor(randomValue * availablePlayers.length)];
@@ -176,7 +178,7 @@ export default function LuckyDrawPage() {
     if (mode === "wheel") {
       const winnerIndex = players.indexOf(selected);
 
-      // 3️⃣ Calculate angle to point the arrow at the correct slice
+      // Calculate angle to point the arrow at the correct slice
       const sliceAngle = 360 / players.length;
       const targetAngle = 360 - (winnerIndex * sliceAngle + sliceAngle / 2);
 
@@ -186,7 +188,7 @@ export default function LuckyDrawPage() {
         targetAngle -
         (rotationRef.current % 360);
 
-      // 4️⃣ Spin
+      // Spin
       spinSound?.stop();
       spinSound?.volume(0.6);
       playSpin();
@@ -198,7 +200,7 @@ export default function LuckyDrawPage() {
       rotationRef.current = nextRotation;
       setRotation(nextRotation);
 
-      // 5️⃣ End spin
+      // End spin
       setTimeout(() => {
         playWin();
 
@@ -208,7 +210,7 @@ export default function LuckyDrawPage() {
         setSpinning(false);
       }, SPIN_DURATION);
     } else {
-      // 3️⃣ Draw
+      // Draw
       drawSound?.stop();
       drawSound?.volume(0.6);
       playDraw();
@@ -217,7 +219,7 @@ export default function LuckyDrawPage() {
         drawSound?.fade(0.6, 0, 800);
       }, LOTTERY_FADE_OUT_AT);
 
-      // 4️⃣ End draw
+      // End draw
       setTimeout(() => {
         playWin();
 
@@ -229,7 +231,7 @@ export default function LuckyDrawPage() {
     }
   };
 
-  /* ===== RESTART ===== */
+  // RESTART
   const restart = () => {
     setWinners([]);
     setPrizeIndex(0);
@@ -242,7 +244,7 @@ export default function LuckyDrawPage() {
     setResetKey((key) => (key % 2 ? key + 1 : key - 1));
   };
 
-  /* ===== ACCEPT WINNER ===== */
+  // ACCEPT WINNER
   const handleAcceptWinner = () => {
     setShowResult(false);
 
@@ -266,7 +268,7 @@ export default function LuckyDrawPage() {
     setPendingWinner(null);
   };
 
-  /* ===== RE-SPIN ===== */
+  // RE-SPIN
   const handleRespin = () => {
     setShowResult(false);
 
@@ -278,7 +280,7 @@ export default function LuckyDrawPage() {
     setPendingWinner(null);
   };
 
-  /* ===== TOGGLE MODE ===== */
+  // TOGGLE MODE
   const handleToggleMode = () => {
     setMode((prev) => (prev === "wheel" ? "lottery" : "wheel"));
   };
@@ -295,7 +297,7 @@ export default function LuckyDrawPage() {
         position: "relative",
       }}
     >
-      {showResult && <Confetti />}
+      {showResult && <Confetti width={width} height={height} />}
 
       <GalaxySparkles count={60} maxSize={3} color="rgba(255,255,255,0.9)" />
       <GalaxySparkles count={28} maxSize={5} color="rgb(223, 243, 255)" />

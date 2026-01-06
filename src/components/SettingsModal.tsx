@@ -105,7 +105,7 @@ export default function SettingModal(props: SettingModalProps) {
               width: "2.875rem",
               height: "1.5rem",
               borderRadius: "1.875rem",
-              background: bgmEnabled ? "#4caf50" : "#555",
+              background: bgmEnabled ? "#C2954F" : "#555",
               border: "none",
               position: "relative",
               cursor: "pointer",
@@ -144,7 +144,7 @@ export default function SettingModal(props: SettingModalProps) {
               width: "2.875rem",
               height: "1.5rem",
               borderRadius: "1.875rem",
-              background: mode === "wheel" ? "#7f9cf58c" : "#b794f48c",
+              background: mode === "wheel" ? "#ebc992" : "#C2954F",
               border: "none",
               position: "relative",
               cursor: "pointer",
@@ -237,7 +237,7 @@ export default function SettingModal(props: SettingModalProps) {
               background: "rgba(255,255,255,0.15)",
               color: "#fff",
               fontFamily: "var(--font-body)",
-              fontSize: "0.875rem",
+              fontSize: "0.8rem",
             }}
           />
 
@@ -258,7 +258,7 @@ export default function SettingModal(props: SettingModalProps) {
               background: "rgba(255,255,255,0.15)",
               color: "#fff",
               fontFamily: "var(--font-body)",
-              fontSize: "0.875rem",
+              fontSize: "0.8rem",
             }}
           />
 
@@ -272,7 +272,7 @@ export default function SettingModal(props: SettingModalProps) {
               marginTop: "0.3125rem",
               background: disabled
                 ? "rgba(255,255,255,0.18)"
-                : "linear-gradient(135deg, #4caf50, #43a047)",
+                : "linear-gradient(135deg, #b6935a, #d19c47)",
               opacity: disabled ? 0.45 : 1,
               border: "none",
               color: "#fff",

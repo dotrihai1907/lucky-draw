@@ -95,24 +95,22 @@ export default function ResultModal(props: ResultModalProps) {
               padding: "0.75rem 1.875rem",
               borderRadius: "0.875rem",
               border: "none",
-              background: "linear-gradient(135deg, #4caf50, #43a047)",
+              background: "linear-gradient(135deg, #b6935a, #d19c47)",
               color: "#fff",
               cursor: "pointer",
               fontSize: "0.9375rem",
               fontWeight: 600,
               transition: "transform 0.15s ease, box-shadow 0.15s ease",
-              boxShadow: "0 0.375rem 1.25rem rgba(76,175,80,0.4)",
+              boxShadow: "0 0.375rem 1.25rem #C2954F",
               fontFamily: "var(--font-body)",
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.transform = "translateY(-0.0625rem)";
-              e.currentTarget.style.boxShadow =
-                "0 0.625rem 1.75rem rgba(76,175,80,0.55)";
+              e.currentTarget.style.boxShadow = "0 0.625rem 1.75rem #C2954F";
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.boxShadow =
-                "0 0.375rem 1.25rem rgba(76,175,80,0.4)";
+              e.currentTarget.style.boxShadow = "0 0.375rem 1.25rem #C2954F";
             }}
           >
             Confirm

@@ -26,7 +26,8 @@ export default function WinnerButton(props: WinnerButtonProps) {
         zIndex: 120,
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.boxShadow = "0 0.5rem 1.5rem rgba(0,0,0,0.15)";
+        e.currentTarget.style.boxShadow =
+          "0 1.2rem 3rem #120C09, 0 0 1.6rem #C2954F";
         e.currentTarget.style.scale = "1.02";
       }}
       onMouseLeave={(e) => {

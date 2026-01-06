@@ -94,7 +94,7 @@ export default function LotteryDisplay(props: LotteryProps) {
           inset: "-2rem",
           borderRadius: "2rem",
           background:
-            "radial-gradient(circle, rgba(170,140,255,.45) 0%, rgba(0,0,0,0) 70%)",
+            "radial-gradient(circle at center,#F4C98A 0%,#2A1C14 65%)",
           filter: "blur(2.2rem)",
           opacity: winner ? 1 : spinning ? 0.7 : 0.35,
           transition: "opacity .4s ease",
@@ -118,10 +118,10 @@ export default function LotteryDisplay(props: LotteryProps) {
           position: "relative",
           overflow: "hidden",
           boxShadow: winner
-            ? "0 0 2.8rem rgba(190,160,255,.7),0 0 5rem rgba(170,140,255,.5)"
+            ? "0 0 3.5rem #F4C98A,0 0 6rem #3A2A20"
             : spinning
-            ? "0 0 1.6rem rgba(170,150,255,.3) inset"
-            : "0 0 1rem rgba(255,255,255,.15) inset",
+            ? "inset 0 0 1.8rem #F4C98A"
+            : " inset 0 0 1.2rem #3A2A20",
           animation:
             spinning && !winner && !showResult
               ? "lotteryPulse .45s infinite alternate ease-in-out"
@@ -151,15 +151,8 @@ export default function LotteryDisplay(props: LotteryProps) {
             style={{
               position: "absolute",
               inset: 0,
-              background: `
-        linear-gradient(90deg,
-          rgba(0,0,0,0) 0%,
-          rgba(155,120,255,.25) 35%,
-          rgba(120,200,255,.35) 50%,
-          rgba(155,120,255,.25) 65%,
-          rgba(0,0,0,0) 100%
-        )
-      `,
+              background:
+                "linear-gradient(120deg, transparent 30%,#F4C98A 45%,#F4C98A 50%,#F4C98A 55%, transparent 70%)",
               filter: "blur(0.25rem)",
               mixBlendMode: "screen",
               animation: "innerSweepGalaxy 2.1s linear infinite",
@@ -215,8 +208,8 @@ export default function LotteryDisplay(props: LotteryProps) {
             wordBreak: "break-word",
             transition: "font-size .25s ease",
             textShadow: winner
-              ? "0 0 1.6rem rgba(255,255,255,.9),0 0 2.6rem rgba(185,160,255,.85)"
-              : "0 0 1rem rgba(170,170,255,.6)",
+              ? "0 0 1.2rem #F7E6C7,0 0 2.6rem #F4C98A)"
+              : "0 0 .9rem #3A2A20)",
           }}
         >
           {text}

@@ -1,4 +1,6 @@
-export const DUMMY_PLAYERS = [
+import type { Prize } from "../types";
+
+export const DUMMY_PLAYERS: string[] = [
   "Nguyễn Văn An",
   "Trần Thị Hoa",
   "Phạm Minh Quân",
@@ -49,4 +51,23 @@ export const DUMMY_PLAYERS = [
   "Hoàng Văn Lâm",
   "Ngô Thị Thảo",
   "Đặng Văn Bình",
+];
+
+export const DUMMY_PRIZES: Prize[] = [
+  {
+    name: "Logitech MX Mechanical Keyboard",
+    count: 4,
+  },
+  {
+    name: "Samsung Galaxy Watch6 Classic",
+    count: 3,
+  },
+  {
+    name: "Samsung Galaxy S24 Ultra",
+    count: 2,
+  },
+  {
+    name: "MacBook Air M2 13 inch",
+    count: 1,
+  },
 ];

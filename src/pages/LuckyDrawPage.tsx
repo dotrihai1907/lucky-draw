@@ -18,7 +18,7 @@ import WheelAction from "../components/WheelAction";
 import WheelHeader from "../components/WheelHeader";
 import WinnerButton from "../components/WinnerButton";
 import WinnersByPrize from "../components/WinnersByPrize";
-import { DUMMY_PLAYERS } from "../constants/dummy";
+import { DUMMY_PLAYERS, DUMMY_PRIZES } from "../constants/dummy";
 import type { GameMode, Prize, WinnerRecord } from "../types";
 
 // TIMING CONFIG
@@ -43,7 +43,7 @@ export default function LuckyDrawPage() {
   const [players, setPlayers] = useState<string[]>(DUMMY_PLAYERS);
 
   // PRIZES
-  const [prizes, setPrizes] = useState<Prize[]>([]);
+  const [prizes, setPrizes] = useState<Prize[]>(DUMMY_PRIZES);
 
   // ROTATION
   const rotationRef = useRef(0);

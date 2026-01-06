@@ -19,7 +19,7 @@ export default function WheelAction(props: WheelActionProps) {
         marginTop: "1.5rem",
         padding: "1rem 2.875rem",
         fontSize: "1.125rem",
-        fontFamily: "Fredoka, sans-serif",
+        fontFamily: "var(--font-title)",
         letterSpacing: "0.0625rem",
         borderRadius: "1.125rem",
         border: "0.0625rem solid rgba(255,255,255,0.35)",

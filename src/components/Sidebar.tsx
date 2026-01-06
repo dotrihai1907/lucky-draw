@@ -64,7 +64,7 @@ export default function Sidebar(props: SidebarProps) {
             textAlign: "center",
             cursor: "pointer",
             color: "#fff",
-            fontFamily: "Fredoka, sans-serif",
+            fontFamily: "var(--font-title)",
             transition: "all 0.25s ease",
           }}
           onMouseEnter={(e) => {
@@ -118,7 +118,7 @@ export default function Sidebar(props: SidebarProps) {
               cursor: "pointer",
               transition: "all 0.2s ease",
               width: "100%",
-              fontFamily: "Fredoka, sans-serif",
+              fontFamily: "var(--font-title)",
               opacity: 0.7,
             }}
             onMouseEnter={(e) => {

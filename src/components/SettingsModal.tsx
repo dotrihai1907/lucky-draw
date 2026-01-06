@@ -48,6 +48,7 @@ export default function SettingModal(props: SettingModalProps) {
 
   return (
     <div
+      onClick={onClose}
       style={{
         position: "fixed",
         inset: 0,
@@ -59,6 +60,7 @@ export default function SettingModal(props: SettingModalProps) {
       }}
     >
       <div
+        onClick={(e) => e.stopPropagation()}
         style={{
           background: "rgba(255,255,255,0.14)",
           backdropFilter: "blur(0.875rem)",
@@ -235,6 +237,7 @@ export default function SettingModal(props: SettingModalProps) {
               background: "rgba(255,255,255,0.15)",
               color: "#fff",
               fontFamily: "var(--font-body)",
+              fontSize: "0.875rem",
             }}
           />
 
@@ -255,6 +258,7 @@ export default function SettingModal(props: SettingModalProps) {
               background: "rgba(255,255,255,0.15)",
               color: "#fff",
               fontFamily: "var(--font-body)",
+              fontSize: "0.875rem",
             }}
           />
 

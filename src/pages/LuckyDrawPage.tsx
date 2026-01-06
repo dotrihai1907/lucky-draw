@@ -7,7 +7,6 @@ import toast from "react-hot-toast";
 import { useWindowSize } from "react-use";
 import EmptyPlayer from "../components/EmptyPlayer";
 import EmptyPrize from "../components/EmptyPrize";
-import GalaxySparkles from "../components/GalaxySparkles";
 import Lottery from "../components/Lottery";
 import LuckyWheel from "../components/LuckyWheel";
 import ResultModal from "../components/ResultModal";
@@ -17,8 +16,8 @@ import Sidebar from "../components/Sidebar";
 import SidebarButton from "../components/SidebarButton";
 import WheelAction from "../components/WheelAction";
 import WheelHeader from "../components/WheelHeader";
+import WinnerButton from "../components/WinnerButton";
 import WinnersByPrize from "../components/WinnersByPrize";
-import { BG_GRADIENT } from "../constants/colors";
 import { DUMMY_PLAYERS } from "../constants/dummy";
 import type { GameMode, Prize, WinnerRecord } from "../types";
 
@@ -33,6 +32,9 @@ const LOTTERY_FADE_OUT_AT = 5000;
 export default function LuckyDrawPage() {
   // SIDEBAR
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // WINNERS
+  const [winnersOpen, setWinnersOpen] = useState(false);
 
   // SETTINGS
   const [showSettings, setShowSettings] = useState(false);
@@ -85,6 +87,8 @@ export default function LuckyDrawPage() {
     volume: 0.8,
   });
 
+  const bgVideoRef = useRef<HTMLVideoElement | null>(null);
+
   // SIZE SCREEN
   const { width, height } = useWindowSize();
 
@@ -96,11 +100,17 @@ export default function LuckyDrawPage() {
 
   const currentPrize = prizes[prizeIndex];
 
-  // BGM EFFECT
+  // BG EFFECT
   useEffect(() => {
     if (bgmEnabled) playBgm();
     else bgmSound?.stop();
   }, [bgmEnabled, playBgm, bgmSound]);
+
+  useEffect(() => {
+    if (bgVideoRef.current) {
+      bgVideoRef.current.playbackRate = 0.6;
+    }
+  }, []);
 
   // UPLOAD FILE
   const uploadFile = (file: File) => {
@@ -291,109 +301,144 @@ export default function LuckyDrawPage() {
         height: "100vh",
         width: "100vw",
         overflow: "hidden",
-        background: BG_GRADIENT,
         color: "#fff",
         display: "flex",
         position: "relative",
       }}
     >
-      {showResult && <Confetti width={width} height={height} />}
+      <video
+        ref={bgVideoRef}
+        autoPlay
+        loop
+        muted
+        playsInline
+        preload="auto"
+        style={{
+          position: "fixed",
+          inset: 0,
+          width: "100vw",
+          height: "100vh",
+          objectFit: "cover",
+          zIndex: 0,
+          pointerEvents: "none",
+        }}
+      >
+        <source src="/videos/bg.mp4" type="video/mp4" />
+      </video>
 
-      <GalaxySparkles count={60} maxSize={3} color="rgba(255,255,255,0.9)" />
-      <GalaxySparkles count={28} maxSize={5} color="rgb(223, 243, 255)" />
+      <div
+        style={{
+          position: "relative",
+          zIndex: 2,
+          width: "100%",
+          height: "100%",
+          display: "flex",
+        }}
+      >
+        {showResult && <Confetti width={width} height={height} />}
 
-      <SidebarButton
-        spinning={spinning}
-        onClick={() => setSidebarOpen((prev) => !prev)}
-      />
-
-      {sidebarOpen && (
-        <Sidebar
-          players={players}
-          onUpload={uploadFile}
-          disabledPlayers={disabledPlayers}
-          onClose={() => setSidebarOpen(false)}
+        <SidebarButton
+          spinning={spinning}
+          onClick={() => setSidebarOpen((prev) => !prev)}
         />
-      )}
 
-      {!!players.length && !!prizes.length ? (
-        <div
-          style={{
-            flex: 1,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <WheelHeader currentPrize={currentPrize} prizeCount={prizeCount} />
-
-          {mode === "wheel" ? (
-            <div
-              style={{
-                width: "min(55vh, 32.5rem)",
-                height: "min(55vh, 32.5rem)",
-              }}
-            >
-              <LuckyWheel
-                names={players}
-                rotation={rotation}
-                disabledNames={disabledPlayers}
-                highlightName={showResult ? winner : null}
-              />
-            </div>
-          ) : (
-            <Lottery
-              disabled={disabledPlayers}
-              showResult={showResult}
-              spinning={spinning}
-              resetKey={resetKey}
-              players={players}
-              winner={winner}
-            />
-          )}
-
-          <WheelAction
-            spin={spin}
-            mode={mode}
-            restart={restart}
-            spinning={spinning}
-            currentPrize={currentPrize}
+        {sidebarOpen && (
+          <Sidebar
+            players={players}
+            onUpload={uploadFile}
+            disabledPlayers={disabledPlayers}
+            onClose={() => setSidebarOpen(false)}
           />
-        </div>
-      ) : !players.length ? (
-        <EmptyPlayer onClick={() => setSidebarOpen(true)} />
-      ) : (
-        <EmptyPrize onClick={() => setShowSettings(true)} />
-      )}
+        )}
 
-      <WinnersByPrize winners={winners} />
+        {!!players.length && !!prizes.length ? (
+          <div
+            style={{
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <WheelHeader currentPrize={currentPrize} prizeCount={prizeCount} />
 
-      <SettingsButton
-        spinning={spinning}
-        onClick={() => setShowSettings((prev) => !prev)}
-      />
+            {mode === "wheel" ? (
+              <div
+                style={{
+                  width: "min(55vh, 32.5rem)",
+                  height: "min(55vh, 32.5rem)",
+                }}
+              >
+                <LuckyWheel
+                  names={players}
+                  rotation={rotation}
+                  disabledNames={disabledPlayers}
+                  highlightName={showResult ? winner : null}
+                />
+              </div>
+            ) : (
+              <Lottery
+                disabled={disabledPlayers}
+                showResult={showResult}
+                spinning={spinning}
+                resetKey={resetKey}
+                players={players}
+                winner={winner}
+              />
+            )}
 
-      {showResult && winner && (
-        <ResultModal
-          winner={winner}
-          onAccept={handleAcceptWinner}
-          onRespin={handleRespin}
+            <WheelAction
+              spin={spin}
+              mode={mode}
+              restart={restart}
+              spinning={spinning}
+              currentPrize={currentPrize}
+            />
+          </div>
+        ) : !players.length ? (
+          <EmptyPlayer onClick={() => setSidebarOpen(true)} />
+        ) : (
+          <EmptyPrize onClick={() => setShowSettings(true)} />
+        )}
+
+        <WinnerButton
+          spinning={spinning}
+          onClick={() => setWinnersOpen((prev) => !prev)}
         />
-      )}
 
-      {showSettings && (
-        <SettingsModal
-          mode={mode}
-          prizes={prizes}
-          onRestart={restart}
-          setPrizes={setPrizes}
-          bgmEnabled={bgmEnabled}
-          onToggleMode={handleToggleMode}
-          onClose={() => setShowSettings(false)}
-          onChangeBgm={() => setBgmEnabled((prev) => !prev)}
+        <WinnersByPrize
+          winners={winners}
+          open={winnersOpen}
+          onClose={() => setWinnersOpen(false)}
         />
-      )}
+
+        <SettingsButton
+          spinning={spinning}
+          onClick={() => setShowSettings((prev) => !prev)}
+        />
+
+        {showResult && winner && (
+          <ResultModal
+            winner={winner}
+            onAccept={handleAcceptWinner}
+            onRespin={handleRespin}
+          />
+        )}
+
+        {showSettings && (
+          <SettingsModal
+            mode={mode}
+            prizes={prizes}
+            onRestart={restart}
+            setPrizes={setPrizes}
+            bgmEnabled={bgmEnabled}
+            onToggleMode={handleToggleMode}
+            onClose={() => setShowSettings(false)}
+            onChangeBgm={() => setBgmEnabled((prev) => !prev)}
+          />
+        )}
+      </div>
     </div>
   );
 }

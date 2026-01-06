@@ -16,7 +16,6 @@ export default function WheelAction(props: WheelActionProps) {
       onClick={currentPrize ? spin : restart}
       disabled={spinning}
       style={{
-        width: "10rem",
         marginTop: "1.5rem",
         padding: "1rem 2.875rem",
         fontSize: "1.125rem",

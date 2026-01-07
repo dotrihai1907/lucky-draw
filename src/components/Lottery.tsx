@@ -27,7 +27,9 @@ export default function LotteryDisplay(props: LotteryProps) {
 
   const textRef = useRef<HTMLSpanElement>(null);
 
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const spinTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const revealTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [revealText, setRevealText] = useState("");
 
@@ -63,7 +65,7 @@ export default function LotteryDisplay(props: LotteryProps) {
   // RANDOM SPIN DISPLAY
   useEffect(() => {
     if (!spinning || showResult || winner) {
-      if (timerRef.current) clearTimeout(timerRef.current);
+      if (spinTimerRef.current) clearTimeout(spinTimerRef.current);
       return;
     }
     if (!activePlayers.length) return;
@@ -73,7 +75,7 @@ export default function LotteryDisplay(props: LotteryProps) {
 
     const run = () => {
       if (!spinning || showResult || winner) {
-        if (timerRef.current) clearTimeout(timerRef.current);
+        if (spinTimerRef.current) clearTimeout(spinTimerRef.current);
         return;
       }
 
@@ -86,13 +88,13 @@ export default function LotteryDisplay(props: LotteryProps) {
       if (i > 55) delay = 160;
       if (i > 75) delay = 200;
 
-      timerRef.current = setTimeout(run, delay);
+      spinTimerRef.current = setTimeout(run, delay);
     };
 
     run();
 
     return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
+      if (spinTimerRef.current) clearTimeout(spinTimerRef.current);
     };
   }, [spinning, activePlayers, winner, showResult]);
 
@@ -103,7 +105,7 @@ export default function LotteryDisplay(props: LotteryProps) {
 
     hasRevealedRef.current = true;
 
-    if (timerRef.current) clearTimeout(timerRef.current);
+    if (revealTimerRef.current) clearTimeout(revealTimerRef.current);
     setRevealText("");
 
     let i = 0;
@@ -112,16 +114,16 @@ export default function LotteryDisplay(props: LotteryProps) {
       i++;
       setRevealText(winner.slice(0, i));
 
-      if (i < winner.length) timerRef.current = setTimeout(type, 80);
+      if (i < winner.length) revealTimerRef.current = setTimeout(type, 80);
       else setTimeout(onRevealDone, 250);
     };
 
     type();
 
     return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
+      if (revealTimerRef.current) clearTimeout(revealTimerRef.current);
     };
-  }, [onRevealDone, props, winner]);
+  }, [onRevealDone, winner]);
 
   // RESET
   useEffect(() => {
@@ -131,7 +133,8 @@ export default function LotteryDisplay(props: LotteryProps) {
     setRevealText("");
     hasRevealedRef.current = false;
 
-    if (timerRef.current) clearTimeout(timerRef.current);
+    if (spinTimerRef.current) clearTimeout(spinTimerRef.current);
+    if (revealTimerRef.current) clearTimeout(revealTimerRef.current);
   }, [resetKey]);
 
   useEffect(() => {

@@ -68,19 +68,19 @@ export default function LuckyDrawPage() {
   );
 
   // BGM
-  const [bgmEnabled, setBgmEnabled] = useState(false);
+  const [bgmEnabled, setBgmEnabled] = useState(true);
 
   const [playBgm, { sound: bgmSound }] = useSound("/sounds/bgm.mp3", {
-    volume: 0.1,
+    volume: 0.2,
     loop: true,
   });
 
   const [playSpin, { sound: spinSound }] = useSound("/sounds/spin.mp3", {
-    volume: 0.6,
+    volume: 0.8,
   });
 
   const [playDraw, { sound: drawSound }] = useSound("/sounds/draw.mp3", {
-    volume: 0.6,
+    volume: 0.8,
   });
 
   const [playWin] = useSound("/sounds/win.mp3", {
@@ -199,12 +199,13 @@ export default function LuckyDrawPage() {
         (rotationRef.current % 360);
 
       // Spin
+      bgmSound?.stop();
       spinSound?.stop();
-      spinSound?.volume(0.6);
+      spinSound?.volume(0.8);
       playSpin();
 
       setTimeout(() => {
-        spinSound?.fade(0.6, 0, 800);
+        spinSound?.fade(0.8, 0, 800);
       }, SPIN_FADE_OUT_AT);
 
       rotationRef.current = nextRotation;
@@ -212,6 +213,7 @@ export default function LuckyDrawPage() {
 
       // End spin
       setTimeout(() => {
+        if (bgmEnabled) playBgm();
         playWin();
 
         setPendingWinner({ prizeName: currentPrize.name, player: selected });
@@ -221,16 +223,18 @@ export default function LuckyDrawPage() {
       }, SPIN_DURATION);
     } else {
       // Draw
+      bgmSound?.stop();
       drawSound?.stop();
-      drawSound?.volume(0.6);
+      drawSound?.volume(0.8);
       playDraw();
 
       setTimeout(() => {
-        drawSound?.fade(0.6, 0, 800);
+        drawSound?.fade(0.8, 0, 800);
       }, LOTTERY_FADE_OUT_AT);
 
       // End draw
       setTimeout(() => {
+        if (bgmEnabled) playBgm();
         playWin();
 
         setPendingWinner({ prizeName: currentPrize.name, player: selected });

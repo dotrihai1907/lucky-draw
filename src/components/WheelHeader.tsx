@@ -7,9 +7,7 @@ export default function WheelHeader(props: WheelHeaderProps) {
 
   return currentPrize ? (
     <div style={{ textAlign: "center", marginBottom: "0.75rem" }}>
-      <h2 style={{ fontFamily: "var(--font-title)" }}>
-        🎁 {currentPrize.name}
-      </h2>
+      <h2 style={{ fontFamily: "var(--font-body)" }}>🎁 {currentPrize.name}</h2>
       <p style={{ opacity: 0.7 }}>
         {prizeCount + 1} / {currentPrize.count}
       </p>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 type LotteryProps = {
   players: string[];
@@ -7,10 +7,19 @@ type LotteryProps = {
   winner: string | null;
   showResult: boolean;
   resetKey: number;
+  onRevealDone: () => void;
 };
 
 export default function LotteryDisplay(props: LotteryProps) {
-  const { players, disabled, spinning, winner, showResult, resetKey } = props;
+  const {
+    players,
+    disabled,
+    spinning,
+    winner,
+    showResult,
+    resetKey,
+    onRevealDone,
+  } = props;
 
   const [display, setDisplay] = useState("");
 
@@ -20,13 +29,19 @@ export default function LotteryDisplay(props: LotteryProps) {
 
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const text = winner || display || "Ready?";
+  const [revealText, setRevealText] = useState("");
+
+  const hasRevealedRef = useRef(false);
+
+  // TEXT TO SHOW
+  const text = winner ? revealText : display || "Ready?";
 
   const activePlayers = useMemo(
     () => players.filter((p) => !disabled.has(p)),
     [players, disabled]
   );
 
+  // AUTO FONT SIZE
   useEffect(() => {
     const el = textRef.current;
     if (!el) return;
@@ -45,6 +60,7 @@ export default function LotteryDisplay(props: LotteryProps) {
     });
   }, [text, winner]);
 
+  // RANDOM SPIN DISPLAY
   useEffect(() => {
     if (!spinning || showResult || winner) {
       if (timerRef.current) clearTimeout(timerRef.current);
@@ -80,11 +96,50 @@ export default function LotteryDisplay(props: LotteryProps) {
     };
   }, [spinning, activePlayers, winner, showResult]);
 
+  // TYPRWITER REVEAL
+  useEffect(() => {
+    if (!winner) return;
+    if (hasRevealedRef.current) return;
+
+    hasRevealedRef.current = true;
+
+    if (timerRef.current) clearTimeout(timerRef.current);
+    setRevealText("");
+
+    let i = 0;
+
+    const type = () => {
+      i++;
+      setRevealText(winner.slice(0, i));
+
+      if (i < winner.length) timerRef.current = setTimeout(type, 80);
+      else setTimeout(onRevealDone, 250);
+    };
+
+    type();
+
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, [onRevealDone, props, winner]);
+
+  // RESET
   useEffect(() => {
     setDisplay("");
     setFontSize(2.6);
+
+    setRevealText("");
+    hasRevealedRef.current = false;
+
     if (timerRef.current) clearTimeout(timerRef.current);
   }, [resetKey]);
+
+  useEffect(() => {
+    if (!winner) {
+      hasRevealedRef.current = false;
+      setRevealText("");
+    }
+  }, [winner]);
 
   return (
     <div style={{ position: "relative", padding: "2rem 0" }}>

@@ -102,9 +102,10 @@ export default function LuckyDrawPage() {
 
   // BG EFFECT
   useEffect(() => {
+    if (spinning) return;
     if (bgmEnabled) playBgm();
     else bgmSound?.stop();
-  }, [bgmEnabled, playBgm, bgmSound]);
+  }, [bgmEnabled, playBgm, bgmSound, spinning]);
 
   useEffect(() => {
     if (bgVideoRef.current) {
@@ -239,7 +240,6 @@ export default function LuckyDrawPage() {
 
         setPendingWinner({ prizeName: currentPrize.name, player: selected });
         setWinner(selected);
-        setShowResult(true);
         setSpinning(false);
       }, LOTTERY_DURATION);
     }
@@ -297,6 +297,7 @@ export default function LuckyDrawPage() {
   // TOGGLE MODE
   const handleToggleMode = () => {
     setMode((prev) => (prev === "wheel" ? "lottery" : "wheel"));
+    restart();
   };
 
   return (
@@ -340,7 +341,10 @@ export default function LuckyDrawPage() {
           overflow: "hidden",
         }}
       >
-        {showResult && <Confetti width={width} height={height} />}
+        {(showResult ||
+          (!spinning && winner && disabledPlayers.has(winner))) && (
+          <Confetti width={width} height={height} />
+        )}
 
         <SidebarButton
           spinning={spinning}
@@ -384,6 +388,7 @@ export default function LuckyDrawPage() {
               </div>
             ) : (
               <Lottery
+                onRevealDone={() => setShowResult(true)}
                 disabled={disabledPlayers}
                 showResult={showResult}
                 spinning={spinning}

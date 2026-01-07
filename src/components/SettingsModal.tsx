@@ -245,6 +245,11 @@ export default function SettingModal(props: SettingModalProps) {
             type="number"
             placeholder="Quantity"
             min={1}
+            step={1}
+            onKeyDown={(e) => {
+              if (["e", "E", "+", "-", ".", ","].includes(e.key))
+                e.preventDefault();
+            }}
             value={newPrize.count}
             onChange={(e) =>
               setNewPrize({ ...newPrize, count: e.target.value })

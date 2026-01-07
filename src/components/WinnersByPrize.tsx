@@ -52,7 +52,7 @@ export default function WinnersByPrize(props: WinnersByPrizeProps) {
         }}
       >
         <h3 style={{ fontFamily: "var(--font-title)", fontSize: "1.375rem" }}>
-          🏆 Lucky Persons
+          🏆 Lucky Winners
         </h3>
 
         {Object.entries(winnersByPrize).map(([prizeName, list]) => (

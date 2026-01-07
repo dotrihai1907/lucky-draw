@@ -5,6 +5,8 @@ type LuckyWheelProps = {
   highlightName?: string | null;
 };
 
+const PALETTE = ["#ecbe74", "#C2954F", "#eec367", "#c48c67"];
+
 const VIEWBOX = 1000;
 const CENTER = VIEWBOX / 2;
 const RADIUS = 480;
@@ -32,9 +34,9 @@ export default function LuckyWheel({
       {/* ===== MODERN GLASS GLOW RING ===== */}
       <defs>
         <radialGradient id="ringGlow" cx="50%" cy="50%" r="60%">
-          <stop offset="0%" stopColor="rgba(255,255,255,0.35)" />
-          <stop offset="70%" stopColor="rgba(255,255,255,0.09)" />
-          <stop offset="100%" stopColor="rgba(255,255,255,0.0)" />
+          <stop offset="0%" stopColor="rgba(209,164,90,0.35)" />
+          <stop offset="70%" stopColor="rgba(209,164,90,0.10)" />
+          <stop offset="100%" stopColor="rgba(209,164,90,0)" />
         </radialGradient>
       </defs>
 
@@ -52,7 +54,7 @@ export default function LuckyWheel({
         cx={CENTER}
         cy={CENTER}
         r={RADIUS * 1.03}
-        stroke="rgba(255,255,255,0.45)"
+        stroke="rgba(209,164,90,0.45)"
         strokeWidth={RADIUS * 0.018}
         fill="none"
         style={{ filter: "blur(6px)" }}
@@ -63,7 +65,7 @@ export default function LuckyWheel({
         cx={CENTER}
         cy={CENTER}
         r={RADIUS * 1.015}
-        stroke="rgba(255,255,255,0.25)"
+        stroke="rgba(209,164,90,0.25)"
         strokeWidth={RADIUS * 0.01}
         fill="none"
       />
@@ -105,7 +107,7 @@ export default function LuckyWheel({
                   A ${RADIUS} ${RADIUS} 0 0 1 ${x2} ${y2}
                   Z
                 `}
-                fill={`hsl(${index * (360 / names.length)}, 80%, 55%)`}
+                fill={PALETTE[index % PALETTE.length]}
                 style={{
                   opacity: isDisabled ? 0.25 : 1,
                   filter: isHighlight
@@ -144,23 +146,23 @@ export default function LuckyWheel({
         {/* Glow */}
         <polygon
           points={`${CENTER - 26},18 ${CENTER + 26},18 ${CENTER},72`}
-          fill="rgba(255,255,255,0.25)"
+          fill="rgba(209,164,90,0.25)"
           style={{ filter: "blur(0.375rem)" }}
         />
 
         {/* Main pointer */}
         <polygon
           points={`${CENTER - 18},20 ${CENTER + 18},20 ${CENTER},64`}
-          fill="rgba(255,255,255,0.9)"
+          fill="#D1A45A"
           style={{
-            filter: "drop-shadow(0 0.375rem 0.875rem rgba(255,255,255,0.35))",
+            filter: "drop-shadow(0 0 1rem rgba(209,164,90,0.8))",
           }}
         />
 
         {/* Inner glass highlight */}
         <polygon
           points={`${CENTER - 10},24 ${CENTER + 10},24 ${CENTER},54`}
-          fill="rgba(255,255,255,0.55)"
+          fill="#EADFC7"
         />
       </g>
     </svg>

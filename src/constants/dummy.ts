@@ -75,19 +75,19 @@ export const DUMMY_PLAYERS: string[] = [
 
 export const DUMMY_PRIZES: Prize[] = [
   {
-    name: "Vé an ủi (Giải khuyến khích)",
+    name: "VÉ TIÊU CHUẨN",
     count: 4,
   },
   {
-    name: "Vé tiêu chuẩn (Giải ba)",
+    name: "VÉ NÂNG CAO",
     count: 3,
   },
   {
-    name: "Vé hạng sang (Giải nhì)",
+    name: "VÉ HẠNG NHẤT",
     count: 2,
   },
   {
-    name: "Vé độc đắc (Jackpot)",
+    name: "VÉ ĐỘC ĐẮC",
     count: 1,
   },
 ];

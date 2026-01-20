@@ -83,7 +83,7 @@ export const DUMMY_PRIZES: Prize[] = [
     count: 3,
   },
   {
-    name: "VÉ HẠNG NHẤT",
+    name: "VÉ HẠNG SANG",
     count: 2,
   },
   {
